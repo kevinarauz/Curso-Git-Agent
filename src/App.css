@@ -7,19 +7,9 @@
   --git-orange: #f05032;
   --gitlab-orange: #fc6d26;
   --github-dark: #24292f;
-  --accent-blue: #3b82f6;
-  --accent-green: #10b981;
   --text-primary: #1f2937;
   --text-secondary: #6b7280;
   --bg-light: #f8fafc;
-  --bg-white: #ffffff;
-  --border-color: #e5e7eb;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  --gradient-git: linear-gradient(135deg, var(--git-orange), var(--gitlab-orange));
-  --border-radius: 0.75rem;
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* Reset y base */
@@ -90,22 +80,6 @@ body {
 
 .card-body {
   padding: 1.5rem;
-}
-
-/* Loading spinner */
-.loading-spinner {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid #f3f3f3;
-  border-top: 2px solid #3498db;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 
 /* Tipografía mejorada */
