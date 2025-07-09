@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Bot, Loader, Copy, RefreshCw, Settings, AlertCircle, GitCompare, AlertTriangle } from 'lucide-react';
 import { useAI } from '../services/aiService';
+import { useAIContinuation } from '../services/aiContinuationService';
 import { glossaryTerms } from '../data/glossary';
 
 interface AIAssistantProps {
@@ -8,7 +9,8 @@ interface AIAssistantProps {
 }
 
 const AIAssistant: React.FC<AIAssistantProps> = () => {
-  const { generateText, setApiKey, setProvider, getConfig } = useAI();
+  const { setApiKey, setProvider, getConfig } = useAI();
+  const { generateWithContinuation } = useAIContinuation();
   
   const [commitDescription, setCommitDescription] = useState('');
   const [commitResult, setCommitResult] = useState('');
@@ -53,9 +55,21 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
     setCommitContinuing(false);
 
     try {
-      const result = await generateText(commitDescription, 'commit', (status) => {
-        setCommitContinuing(status === 'continuing');
-      });
+      const result = await generateWithContinuation(
+        commitDescription, 
+        'commit',
+        {
+          onProgress: (status) => {
+            setCommitContinuing(status === 'continuing');
+          },
+          onPartialResponse: (content) => {
+            setCommitResult(content);
+          },
+          onError: (error) => {
+            setCommitError(error);
+          }
+        }
+      );
       
       if (result.success) {
         setCommitResult(result.content);
@@ -82,9 +96,21 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
     setCommandContinuing(false);
 
     try {
-      const result = await generateText(commandDescription, 'command', (status) => {
-        setCommandContinuing(status === 'continuing');
-      });
+      const result = await generateWithContinuation(
+        commandDescription, 
+        'command',
+        {
+          onProgress: (status) => {
+            setCommandContinuing(status === 'continuing');
+          },
+          onPartialResponse: (content) => {
+            setCommandResult(content);
+          },
+          onError: (error) => {
+            setCommandError(error);
+          }
+        }
+      );
       
       if (result.success) {
         setCommandResult(result.content);
@@ -112,9 +138,21 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
 
     try {
       const prompt = `Para un principiante en Git, explica la diferencia fundamental entre los comandos "${command1}" y "${command2}". Enfócate en su propósito principal, cuándo es mejor usar cada uno, y los posibles riesgos o resultados. La respuesta debe ser clara, concisa y en español.`;
-      const result = await generateText(prompt, 'command', (status) => {
-        setComparisonContinuing(status === 'continuing');
-      });
+      const result = await generateWithContinuation(
+        prompt, 
+        'command',
+        {
+          onProgress: (status) => {
+            setComparisonContinuing(status === 'continuing');
+          },
+          onPartialResponse: (content) => {
+            setComparisonResult(content);
+          },
+          onError: (error) => {
+            setComparisonError(error);
+          }
+        }
+      );
       
       if (result.success) {
         setComparisonResult(result.content);
@@ -142,9 +180,21 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
 
     try {
       const prompt = `Como un experto en Git, he recibido el siguiente mensaje de error: "${errorDescription}". Explícame en español, de forma sencilla, qué significa este error, por qué ocurre comúnmente y dame los pasos claros para solucionarlo.`;
-      const result = await generateText(prompt, 'command', (status) => {
-        setErrorContinuing(status === 'continuing');
-      });
+      const result = await generateWithContinuation(
+        prompt, 
+        'command',
+        {
+          onProgress: (status) => {
+            setErrorContinuing(status === 'continuing');
+          },
+          onPartialResponse: (content) => {
+            setErrorSolution(content);
+          },
+          onError: (error) => {
+            setErrorError(error);
+          }
+        }
+      );
       
       if (result.success) {
         setErrorSolution(result.content);
@@ -706,11 +756,12 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
       )}
 
       <div className="mt-8 p-4 bg-green-50 rounded-lg border border-green-200">
-        <h3 className="font-medium text-green-900 mb-2">🚀 Nueva funcionalidad: Respuestas largas</h3>
+        <h3 className="font-medium text-green-900 mb-2">🚀 Sistema de Continuación Automática Activo</h3>
         <p className="text-sm text-green-800">
-          Ahora cuando una respuesta de IA es muy larga y se corta por límites de tokens, 
-          <strong className="mx-1">se continuará automáticamente</strong> 
-          para que obtengas la respuesta completa. Verás un indicador "Continuando respuesta..." durante el proceso.
+          <strong>✨ Nuevo servicio mejorado:</strong> Ahora usando 
+          <code className="mx-1 px-2 py-1 bg-green-100 rounded text-xs">aiContinuationService</code>
+          que detecta automáticamente respuestas cortadas y las continúa sin intervención del usuario.
+          Verás actualizaciones en tiempo real mientras se construye la respuesta completa.
         </p>
       </div>
 

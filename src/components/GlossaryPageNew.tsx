@@ -2,10 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { Search, BookMarked, Filter, X, Bot, Zap, GitCompare, AlertTriangle, Copy, Loader } from 'lucide-react';
 import { glossaryTerms, searchGlossary, getTermsByCategory } from '../data/glossary';
 import { useAI } from '../services/aiService';
+import { useAIContinuation } from '../services/aiContinuationService';
 import type { GlossaryTerm } from '../types';
 
 const GlossaryPage: React.FC = () => {
   const { generateText } = useAI();
+  const { generateWithContinuation } = useAIContinuation();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [expandedTerm, setExpandedTerm] = useState<string | null>(null);
@@ -78,7 +80,20 @@ const GlossaryPage: React.FC = () => {
 
     try {
       const prompt = `Explica el comando de git "${command}" para un principiante. Detalla qué hace, cuándo se usa comúnmente, y un ejemplo práctico. La respuesta debe estar en español y ser clara y concisa.`;
-      const result = await generateText(prompt, 'command');
+      const result = await generateWithContinuation(
+        prompt, 
+        'command',
+        {
+          onProgress: (status) => {
+            if (status === 'continuing') {
+              setModalContent(prevContent => prevContent + '\n\n[Continuando explicación...]');
+            }
+          },
+          onPartialResponse: (content) => {
+            setModalContent(content);
+          }
+        }
+      );
       
       if (result.success) {
         setModalContent(result.content);
@@ -113,7 +128,20 @@ const GlossaryPage: React.FC = () => {
     
     try {
       const prompt = `Para un principiante en Git, explica la diferencia fundamental entre los comandos "${cmd1}" y "${cmd2}". Enfócate en su propósito principal, cuándo es mejor usar cada uno, y los posibles riesgos o resultados. La respuesta debe ser clara, concisa y en español.`;
-      const result = await generateText(prompt, 'command');
+      const result = await generateWithContinuation(
+        prompt, 
+        'command',
+        {
+          onProgress: (status) => {
+            if (status === 'continuing') {
+              setComparisonResult(prev => prev + '\n\n[Continuando análisis...]');
+            }
+          },
+          onPartialResponse: (content) => {
+            setComparisonResult(content);
+          }
+        }
+      );
       
       console.log('Resultado de IA:', result);
       
@@ -140,7 +168,20 @@ const GlossaryPage: React.FC = () => {
     
     try {
       const prompt = `Como un experto en Git, he recibido el siguiente mensaje de error: "${errorDescription}". Explícame en español, de forma sencilla, qué significa este error, por qué ocurre comúnmente y dame los pasos claros para solucionarlo.`;
-      const result = await generateText(prompt, 'command');
+      const result = await generateWithContinuation(
+        prompt, 
+        'command',
+        {
+          onProgress: (status) => {
+            if (status === 'continuing') {
+              setErrorSolution(prev => prev + '\n\n[Continuando análisis...]');
+            }
+          },
+          onPartialResponse: (content) => {
+            setErrorSolution(content);
+          }
+        }
+      );
       
       if (result.success) {
         setErrorSolution(result.content);
