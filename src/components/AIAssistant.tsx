@@ -236,7 +236,8 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
   }, [allCommands, command1, command2]);
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-6xl mx-auto p-6">
       <div className="mb-8 text-center">
         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full mb-4">
           <Bot className="w-8 h-8 text-white" />
@@ -341,9 +342,11 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
                     <Copy className="w-4 h-4" />
                   </button>
                 </div>
-                <pre className="bg-gray-900 text-green-400 p-3 rounded text-sm overflow-x-auto">
-                  <code>{commitResult}</code>
-                </pre>
+                <div className="border border-gray-200 rounded">
+                  <pre className="bg-gray-900 text-green-400 p-3 text-sm overflow-x-auto whitespace-pre-wrap">
+                    <code>{commitResult}</code>
+                  </pre>
+                </div>
               </div>
             )}
           </div>
@@ -409,10 +412,12 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
                     <Copy className="w-4 h-4" />
                   </button>
                 </div>
-                <div 
-                  className="prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{ __html: renderMarkdown(commandResult) }}
-                />
+                <div className="border border-gray-200 rounded p-3 bg-white">
+                  <div 
+                    className="prose prose-sm max-w-none text-sm leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: renderMarkdown(commandResult) }}
+                  />
+                </div>
               </div>
             )}
           </div>
@@ -502,10 +507,12 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
                         <Copy className="w-4 h-4" />
                       </button>
                     </div>
-                    <div 
-                      className="prose prose-sm max-w-none"
-                      dangerouslySetInnerHTML={{ __html: renderMarkdown(comparisonResult) }}
-                    />
+                    <div className="border border-gray-200 rounded p-3 bg-white">
+                      <div 
+                        className="prose prose-sm max-w-none text-sm leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: renderMarkdown(comparisonResult) }}
+                      />
+                    </div>
                   </div>
                 )}
               </>
@@ -573,10 +580,12 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
                     <Copy className="w-4 h-4" />
                   </button>
                 </div>
-                <div 
-                  className="prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{ __html: renderMarkdown(errorSolution) }}
-                />
+                <div className="border border-gray-200 rounded p-3 bg-white">
+                  <div 
+                    className="prose prose-sm max-w-none text-sm leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: renderMarkdown(errorSolution) }}
+                  />
+                </div>
               </div>
             )}
           </div>
@@ -673,6 +682,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
           <li>• <strong>Errores:</strong> Copia el mensaje de error completo para una mejor diagnosis</li>
           <li>• Siempre revisa las sugerencias antes de usarlas en tu proyecto</li>
         </ul>
+      </div>
       </div>
     </div>
   );

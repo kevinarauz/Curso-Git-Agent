@@ -404,10 +404,12 @@ const GlossaryPage: React.FC = () => {
                             <Copy className="w-4 h-4" />
                           </button>
                         </div>
-                        <div 
-                          className="text-sm text-gray-700"
-                          dangerouslySetInnerHTML={{ __html: renderMarkdown(comparisonResult) }}
-                        />
+                        <div className="border border-gray-200 rounded p-3 bg-white">
+                          <div 
+                            className="text-sm text-gray-700 leading-relaxed"
+                            dangerouslySetInnerHTML={{ __html: renderMarkdown(comparisonResult) }}
+                          />
+                        </div>
                       </div>
                     )}
                   </>
@@ -438,10 +440,12 @@ const GlossaryPage: React.FC = () => {
                 </button>
                 {errorSolution && (
                   <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
-                    <div 
-                      className="text-sm text-gray-700"
-                      dangerouslySetInnerHTML={{ __html: renderMarkdown(errorSolution) }}
-                    />
+                    <div className="border border-red-200 rounded p-3 bg-white">
+                      <div 
+                        className="text-sm text-gray-700 leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: renderMarkdown(errorSolution) }}
+                      />
+                    </div>
                   </div>
                 )}
               </div>
@@ -596,7 +600,7 @@ const GlossaryPage: React.FC = () => {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[95vh] overflow-hidden">
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">{modalTitle}</h3>
               <button
@@ -606,7 +610,7 @@ const GlossaryPage: React.FC = () => {
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <div className="p-6 overflow-y-auto">
+            <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(95vh - 120px)' }}>
               {isLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader className="w-8 h-8 animate-spin text-blue-600" />
