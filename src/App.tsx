@@ -5,6 +5,7 @@ import AIAssistant from './components/AIAssistant';
 import GlossaryPage from './components/GlossaryPage';
 import AchievementsPage from './components/AchievementsPage';
 import ExercisesPage from './components/ExercisesPage';
+import ProfilePage from './components/ProfilePage';
 import Footer from './components/Footer';
 import ToastContainer, { type ToastMessage } from './components/ToastContainer';
 import GamificationBar from './components/GamificationBar';
@@ -14,7 +15,6 @@ import {
   Target, 
   BookMarked, 
   User, 
-  Settings, 
   Home,
   Bot,
   Menu,
@@ -224,24 +224,6 @@ const HomePage = () => {
   );
 };
 
-// Componente placeholder para las demás páginas
-const PlaceholderPage = ({ title, description }: { title: string; description: string }) => {
-  return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-4xl mx-auto text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-6">{title}</h1>
-        <p className="text-xl text-gray-600 mb-8">{description}</p>
-        <div className="bg-white rounded-lg p-8 shadow-lg">
-          <div className="text-gray-500">
-            <Settings className="w-16 h-16 mx-auto mb-4" />
-            <p>Esta sección está en desarrollo...</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
@@ -302,7 +284,7 @@ function App() {
       case 'achievements':
         return <AchievementsPage />;
       case 'profile':
-        return <PlaceholderPage title="Mi Perfil" description="Gestiona tu perfil y configuraciones" />;
+        return <ProfilePage />;
       default:
         return <HomePage />;
     }

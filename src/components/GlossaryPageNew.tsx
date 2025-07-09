@@ -20,6 +20,7 @@ const GlossaryPage: React.FC = () => {
   const [command1, setCommand1] = useState('git pull');
   const [command2, setCommand2] = useState('git fetch');
   const [comparisonResult, setComparisonResult] = useState('');
+  const [comparisonLoading, setComparisonLoading] = useState(false);
   const [errorDescription, setErrorDescription] = useState('');
   const [errorSolution, setErrorSolution] = useState('');
   const [commitDescription, setCommitDescription] = useState('');
@@ -92,16 +93,29 @@ const GlossaryPage: React.FC = () => {
   };
 
   const compareCommands = async () => {
-    if (!command1 || !command2 || command1 === command2) {
-      alert('Por favor, elige dos comandos diferentes para comparar.');
+    const cmd1 = command1.trim();
+    const cmd2 = command2.trim();
+    
+    console.log('Comparando comandos:', { cmd1, cmd2 });
+    
+    if (!cmd1 || !cmd2) {
+      alert('Por favor, ingresa ambos comandos para comparar.');
+      return;
+    }
+    
+    if (cmd1 === cmd2) {
+      alert('Por favor, ingresa dos comandos diferentes para comparar.');
       return;
     }
 
+    setComparisonLoading(true);
     setComparisonResult('Analizando las diferencias...');
     
     try {
-      const prompt = `Para un principiante en Git, explica la diferencia fundamental entre los comandos "${command1}" y "${command2}". Enfócate en su propósito principal, cuándo es mejor usar cada uno, y los posibles riesgos o resultados. La respuesta debe ser clara, concisa y en español.`;
+      const prompt = `Para un principiante en Git, explica la diferencia fundamental entre los comandos "${cmd1}" y "${cmd2}". Enfócate en su propósito principal, cuándo es mejor usar cada uno, y los posibles riesgos o resultados. La respuesta debe ser clara, concisa y en español.`;
       const result = await generateText(prompt, 'command');
+      
+      console.log('Resultado de IA:', result);
       
       if (result.success) {
         setComparisonResult(result.content);
@@ -109,7 +123,10 @@ const GlossaryPage: React.FC = () => {
         setComparisonResult(result.error || 'Error al comparar comandos');
       }
     } catch (error) {
+      console.error('Error en compareCommands:', error);
       setComparisonResult('Error de conexión. Verifica tu configuración de IA.');
+    } finally {
+      setComparisonLoading(false);
     }
   };
 
@@ -176,11 +193,6 @@ const GlossaryPage: React.FC = () => {
       .replace(/\* (.*?)(?:\n|$)/g, '<ul><li>$1</li></ul>')
       .replace(/\n/g, '<br>');
   };
-
-  // Obtener lista de comandos para los selectores
-  const gitCommands = glossaryTerms
-    .filter(term => term.term.startsWith('git '))
-    .sort((a, b) => a.term.localeCompare(b.term));
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -270,34 +282,59 @@ const GlossaryPage: React.FC = () => {
               </h3>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <select
-                    value={command1}
-                    onChange={(e) => setCommand1(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  >
-                    {gitCommands.map(cmd => (
-                      <option key={cmd.term} value={cmd.term}>{cmd.term}</option>
-                    ))}
-                  </select>
-                  <select
-                    value={command2}
-                    onChange={(e) => setCommand2(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  >
-                    {gitCommands.map(cmd => (
-                      <option key={cmd.term} value={cmd.term}>{cmd.term}</option>
-                    ))}
-                  </select>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Primer comando:
+                    </label>
+                    <input
+                      type="text"
+                      value={command1}
+                      onChange={(e) => setCommand1(e.target.value)}
+                      placeholder="Ej: git pull"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Segundo comando:
+                    </label>
+                    <input
+                      type="text"
+                      value={command2}
+                      onChange={(e) => setCommand2(e.target.value)}
+                      placeholder="Ej: git fetch"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    />
+                  </div>
                 </div>
                 <button
                   onClick={compareCommands}
-                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
+                  disabled={comparisonLoading}
+                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                 >
-                  <Zap className="w-4 h-4 mr-2" />
-                  Comparar con IA
+                  {comparisonLoading ? (
+                    <>
+                      <Loader className="w-4 h-4 animate-spin mr-2" />
+                      Comparando...
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="w-4 h-4 mr-2" />
+                      Comparar con IA
+                    </>
+                  )}
                 </button>
                 {comparisonResult && (
                   <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-800">Comparación:</span>
+                      <button
+                        onClick={() => copyToClipboard(comparisonResult.replace(/<[^>]*>/g, ''))}
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                    </div>
                     <div 
                       className="text-sm text-gray-700"
                       dangerouslySetInnerHTML={{ __html: renderMarkdown(comparisonResult) }}
