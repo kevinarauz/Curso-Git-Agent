@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { Bot, Loader, Copy, RefreshCw } from 'lucide-react';
+import { Bot, Loader, Copy, RefreshCw, Settings, AlertCircle, CheckCircle } from 'lucide-react';
+import { useAI } from '../services/aiService';
 
 interface AIAssistantProps {
   onClose?: () => void;
 }
 
-const AIAssistant: React.FC<AIAssistantProps> = ({ onClose }) => {
+const AIAssistant: React.FC<AIAssistantProps> = () => {
+  const { generateText, setApiKey, setProvider, getConfig } = useAI();
+  
   const [commitDescription, setCommitDescription] = useState('');
   const [commitResult, setCommitResult] = useState('');
   const [commitLoading, setCommitLoading] = useState(false);
@@ -16,32 +19,9 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onClose }) => {
   const [commandLoading, setCommandLoading] = useState(false);
   const [commandError, setCommandError] = useState('');
 
-  // Función para llamar a una API de IA (simulada por ahora)
-  const callAI = async (prompt: string, type: 'commit' | 'command'): Promise<string> => {
-    // Por ahora vamos a simular respuestas de IA
-    // En una implementación real, aquí iría la llamada a OpenAI, Gemini, etc.
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Simular latencia
-
-    if (type === 'commit') {
-      const examples = [
-        'feat: agregar página de contacto con formulario y validaciones',
-        'fix: corregir error en validación de email',
-        'docs: actualizar README con instrucciones de instalación',
-        'style: mejorar estilos de la página principal',
-        'refactor: reorganizar estructura de componentes',
-        'test: agregar pruebas para el componente Header'
-      ];
-      return examples[Math.floor(Math.random() * examples.length)];
-    } else {
-      const examples = [
-        '```bash\ngit status\n```\n\n**Explicación:** Este comando te muestra el estado actual de tu repositorio, incluyendo archivos modificados, archivos en staging, y archivos no rastreados.',
-        '```bash\ngit log --oneline\n```\n\n**Explicación:** Muestra el historial de commits de forma compacta, con una línea por commit.',
-        '```bash\ngit checkout HEAD~1 -- nombre_archivo.txt\n```\n\n**Explicación:** Restaura un archivo específico a la versión del commit anterior.',
-        '```bash\ngit branch nueva-rama\ngit checkout nueva-rama\n```\n\n**Explicación:** Crea una nueva rama y cambia a ella. También puedes usar `git checkout -b nueva-rama` para hacer ambas acciones en un solo comando.'
-      ];
-      return examples[Math.floor(Math.random() * examples.length)];
-    }
-  };
+  const [showConfig, setShowConfig] = useState(false);
+  const [tempApiKey, setTempApiKey] = useState('');
+  const [currentProvider, setCurrentProvider] = useState(getConfig().provider);
 
   const generateCommit = async () => {
     if (!commitDescription.trim()) {
@@ -54,10 +34,15 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onClose }) => {
     setCommitResult('');
 
     try {
-      const result = await callAI(commitDescription, 'commit');
-      setCommitResult(result);
+      const result = await generateText(commitDescription, 'commit');
+      
+      if (result.success) {
+        setCommitResult(result.content);
+      } else {
+        setCommitError(result.error || 'Error al generar el mensaje de commit.');
+      }
     } catch (error) {
-      setCommitError('Error al generar el mensaje de commit. Inténtalo de nuevo.');
+      setCommitError('Error de conexión. Verifica tu configuración de API.');
     } finally {
       setCommitLoading(false);
     }
@@ -74,12 +59,26 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onClose }) => {
     setCommandResult('');
 
     try {
-      const result = await callAI(commandDescription, 'command');
-      setCommandResult(result);
+      const result = await generateText(commandDescription, 'command');
+      
+      if (result.success) {
+        setCommandResult(result.content);
+      } else {
+        setCommandError(result.error || 'Error al buscar el comando.');
+      }
     } catch (error) {
-      setCommandError('Error al buscar el comando. Inténtalo de nuevo.');
+      setCommandError('Error de conexión. Verifica tu configuración de API.');
     } finally {
       setCommandLoading(false);
+    }
+  };
+
+  const handleSaveConfig = () => {
+    if (tempApiKey.trim()) {
+      setApiKey(tempApiKey);
+      setProvider(currentProvider, tempApiKey);
+      setShowConfig(false);
+      setTempApiKey('');
     }
   };
 
@@ -107,10 +106,42 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onClose }) => {
         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full mb-4">
           <Bot className="w-8 h-8 text-white" />
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Asistente Git con IA ✨</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Asistente Git con IA ✨</h1>
+          <button
+            onClick={() => setShowConfig(!showConfig)}
+            className="flex items-center px-3 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50"
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Configurar
+          </button>
+        </div>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           ¿Atascado? Usa el poder de la IA para generar mensajes de commit o encontrar el comando que necesitas.
         </p>
+      </div>
+
+      {/* Indicador de Estado */}
+      <div className="bg-white rounded-lg shadow-md p-4 mb-8">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className={`w-3 h-3 rounded-full ${getConfig().provider === 'ollama' || localStorage.getItem(`ai-api-key-${getConfig().provider}`) ? 'bg-green-500' : 'bg-red-500'}`} />
+            <span className="text-sm font-medium text-gray-700">
+              Estado: {getConfig().provider === 'ollama' || localStorage.getItem(`ai-api-key-${getConfig().provider}`) ? 'Configurado' : 'Requiere configuración'}
+            </span>
+            <span className="text-xs text-gray-500">
+              Proveedor: {getConfig().provider.toUpperCase()}
+            </span>
+          </div>
+          {(!localStorage.getItem(`ai-api-key-${getConfig().provider}`) && getConfig().provider !== 'ollama') && (
+            <button
+              onClick={() => setShowConfig(true)}
+              className="text-sm text-blue-600 hover:text-blue-700 underline"
+            >
+              Configurar ahora
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
@@ -138,7 +169,10 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onClose }) => {
                 placeholder="Ej: Agregué la página de contacto con un formulario y validaciones."
               />
               {commitError && (
-                <p className="text-sm text-red-600 mt-2">{commitError}</p>
+                <div className="flex items-center space-x-2 text-sm text-red-600 mt-2">
+                  <AlertCircle className="w-4 h-4" />
+                  <span>{commitError}</span>
+                </div>
               )}
             </div>
 
@@ -203,7 +237,10 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onClose }) => {
                 placeholder="Ej: Quiero volver a la versión anterior de un archivo."
               />
               {commandError && (
-                <p className="text-sm text-red-600 mt-2">{commandError}</p>
+                <div className="flex items-center space-x-2 text-sm text-red-600 mt-2">
+                  <AlertCircle className="w-4 h-4" />
+                  <span>{commandError}</span>
+                </div>
               )}
             </div>
 
@@ -245,6 +282,80 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onClose }) => {
           </div>
         </div>
       </div>
+
+      {/* Panel de Configuración */}
+      {showConfig && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Configuración de IA</h3>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Proveedor de IA
+              </label>
+              <select
+                value={currentProvider}
+                onChange={(e) => setCurrentProvider(e.target.value as any)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="openai">OpenAI (GPT)</option>
+                <option value="gemini">Google Gemini</option>
+                <option value="anthropic">Anthropic (Claude)</option>
+                <option value="ollama">Ollama (Local)</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                API Key {currentProvider !== 'ollama' && <span className="text-red-500">*</span>}
+              </label>
+              <input
+                type="password"
+                value={tempApiKey}
+                onChange={(e) => setTempApiKey(e.target.value)}
+                placeholder={currentProvider === 'ollama' ? 'No requerida para Ollama' : 'Ingresa tu API key'}
+                disabled={currentProvider === 'ollama'}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+              />
+            </div>
+          </div>
+          
+          <div className="mt-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h4 className="font-medium text-blue-900 mb-2">Instrucciones por proveedor:</h4>
+              <div className="text-sm text-blue-800 space-y-1">
+                {currentProvider === 'openai' && (
+                  <p>• Obtén tu API key en: <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="underline">OpenAI Platform</a></p>
+                )}
+                {currentProvider === 'gemini' && (
+                  <p>• Obtén tu API key en: <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="underline">Google AI Studio</a></p>
+                )}
+                {currentProvider === 'anthropic' && (
+                  <p>• Obtén tu API key en: <a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer" className="underline">Anthropic Console</a></p>
+                )}
+                {currentProvider === 'ollama' && (
+                  <p>• Instala Ollama localmente: <a href="https://ollama.ai" target="_blank" rel="noopener noreferrer" className="underline">ollama.ai</a> y ejecuta un modelo</p>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex justify-end mt-4 space-x-3">
+            <button
+              onClick={() => setShowConfig(false)}
+              className="px-4 py-2 text-gray-600 hover:text-gray-800"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleSaveConfig}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Guardar Configuración
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="mt-8 p-4 bg-blue-50 rounded-lg">
         <h3 className="font-medium text-blue-900 mb-2">💡 Consejos para usar el asistente:</h3>
