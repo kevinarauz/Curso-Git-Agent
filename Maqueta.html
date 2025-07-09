@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Esencial de Git y Control de Versiones</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <!-- Estilos Personalizados -->
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --primary-hover: #0a58ca;
+            --dark-blue: #003366;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e9ecef;
+            --dark-gray: #343a40;
+            --text-color: #212529;
+            --white-color: #ffffff;
+            --gold-color: #FFD700;
+            --border-radius-md: 0.75rem; /* 12px */
+            --border-radius-lg: 1rem; /* 16px */
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 5px 15px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+            --gamification-bar-height: 50px;
+            --navbar-height: 72px;
+            --total-fixed-height: calc(var(--gamification-bar-height) + var(--navbar-height));
+        }
+
+        html {
+            scroll-padding-top: var(--total-fixed-height);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--white-color);
+            color: var(--text-color);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- Barra de Navegación --- */
+        .navbar {
+            transition: background-color 0.4s ease, box-shadow 0.4s ease;
+            padding: 1rem 0;
+            z-index: 1030;
+            top: var(--gamification-bar-height);
+            height: var(--navbar-height);
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        .navbar-brand svg {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .navbar.scrolled {
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-link {
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        /* --- Sección Hero --- */
+        .hero-section {
+            background: linear-gradient(135deg, #0052D4, #4364F7, #6FB1FC);
+            color: var(--white-color);
+            padding: 6rem 1rem;
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='1' d='M0,192L48,176C96,160,192,128,288,133.3C384,139,480,181,576,186.7C672,192,768,160,864,133.3C960,107,1056,85,1152,96C1248,107,1344,149,1392,170.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        .hero-section h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .hero-section .lead {
+            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto 1.5rem auto;
+        }
+        .meta-info {
+            display: inline-block;
+            background-color: rgba(255,255,255,0.15);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+        }
+
+        /* --- Títulos de Sección --- */
+        .section-title {
+            color: var(--dark-blue);
+            margin-bottom: 3rem;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            height: 5px;
+            width: 70px;
+            background: linear-gradient(90deg, #0052D4, #6FB1FC);
+            border-radius: 3px;
+        }
+
+        /* --- Tarjetas --- */
+        .card {
+            border: none;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+        .card-header {
+            background-color: var(--dark-blue);
+            color: var(--white-color);
+            font-weight: 700;
+            border-top-left-radius: var(--border-radius-lg);
+            border-top-right-radius: var(--border-radius-lg);
+            padding: 1.25rem 1.5rem;
+            border-bottom: 3px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+        .card-header svg {
+            margin-right: 0.75rem;
+        }
+        .card-body {
+            padding: 1.5rem;
+        }
+        .card-title-concept {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        /* --- Acordeón --- */
+        .accordion-item {
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius-lg);
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+        .accordion-button {
+            font-weight: 700;
+            color: var(--dark-blue);
+            background-color: var(--white-color);
+            padding: 1.25rem 1.5rem;
+        }
+        .accordion-button:not(.collapsed) {
+            background-color: #e7f1ff;
+            color: var(--primary-color);
+            box-shadow: inset 0 -1px 0 var(--medium-gray);
+        }
+        .accordion-button:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        .accordion-button::after {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23003366'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+        }
+
+        /* --- Bloques de Código --- */
+        pre {
+            background-color: #282c34; /* Dark theme */
+            color: #abb2bf;
+            font-family: 'Source Code Pro', monospace;
+            padding: 1.5rem;
+            border-radius: var(--border-radius-md);
+            overflow-x: auto;
+            position: relative;
+        }
+        code {
+            font-family: 'Source Code Pro', monospace;
+        }
+        pre button.copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #4f5666;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        pre:hover button.copy-btn {
+            opacity: 1;
+        }
+        pre button.copy-btn:hover {
+            background-color: #6d7589;
+        }
+
+
+        /* --- Blockquotes --- */
+        .blockquote {
+            border-left: 5px solid var(--primary-color);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            color: #555;
+            background-color: var(--light-gray);
+            padding: 1.5rem;
+            border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+        }
+        .blockquote-footer {
+            color: #6c757d;
+            font-style: normal;
+            margin-top: 1rem;
+        }
+
+        /* --- Listas --- */
+        .list-group-item {
+            border-radius: var(--border-radius-md);
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--medium-gray);
+            padding: 1.25rem 1.5rem;
+        }
+        .list-group-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* --- Footer --- */
+        footer {
+            background-color: var(--dark-gray);
+            color: var(--light-gray);
+            padding: 3rem 0;
+            text-align: center;
+            margin-top: 5rem;
+        }
+        footer p {
+            margin-bottom: 0.5rem;
+        }
+        footer .text-muted-footer {
+            color: #adb5bd !important;
+        }
+
+        /* --- Animaciones de Scroll --- */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Diagrama de Flujo --- */
+        .flow-diagram .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .flow-diagram .flow-icon {
+            font-size: 2.5rem;
+            color: var(--dark-blue);
+        }
+        .flow-diagram .flow-arrow {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin: 0 1rem;
+            align-self: center;
+        }
+        .flow-diagram .flow-command {
+            font-family: 'Source Code Pro', monospace;
+            background-color: var(--medium-gray);
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+            font-weight: 500;
+            color: var(--dark-blue);
+        }
+
+        @media (max-width: 767px) {
+            .flow-diagram .flow-arrow {
+                transform: rotate(90deg);
+                margin: 1rem 0;
+            }
+        }
+
+        /* --- Asistente IA --- */
+        #ai-assistant .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+        #ai-assistant .btn {
+            align-self: flex-start;
+        }
+        #ai-assistant .form-control {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+        #ai-assistant .form-control:focus {
+            background-color: var(--white-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        .form-control.is-invalid {
+            border-color: #dc3545;
+        }
+        #ai-assistant .spinner-border {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+        #ai-assistant .ai-result {
+            background-color: var(--light-gray);
+            border: 1px solid var(--medium-gray);
+            min-height: 100px;
+        }
+        #ai-assistant .ai-result pre {
+            margin-top: 0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        #ai-assistant .ai-result code {
+            background-color: #dce9fa;
+            padding: 0.2em 0.4em;
+            margin: 0;
+            font-size: 85%;
+            border-radius: 6px;
+        }
+        #ai-assistant .ai-result pre code {
+            background-color: transparent;
+            padding: 0;
+            margin: 0;
+            font-size: inherit;
+            border-radius: 0;
+        }
+
+        /* --- Gamificación --- */
+        .gamification-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--dark-gray);
+            color: var(--white-color);
+            z-index: 1031; /* Por encima del navbar */
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            height: var(--gamification-bar-height);
+        }
+        .gamification-bar .level-info {
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .gamification-bar .progress {
+            height: 1.25rem;
+            flex-grow: 1;
+            margin: 0 1rem;
+            background-color: #495057;
+        }
+        .gamification-bar .progress-bar {
+            background: linear-gradient(90deg, #ffd700, #ffca00);
+            color: var(--dark-gray);
+            font-weight: bold;
+            transition: width 0.5s ease-in-out;
+        }
+        .gamification-bar .xp-info {
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .practice-check {
+            margin-left: auto;
+            transform: scale(1.5);
+            cursor: pointer;
+        }
+        .accordion-button .form-check-input:focus {
+            box-shadow: none;
+        }
+
+        .badge-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1055;
+        }
+        .badge-toast .toast-header {
+            background-color: var(--gold-color);
+            color: var(--dark-gray);
+            font-weight: bold;
+        }
+        .badge-toast .toast-body {
+            font-size: 1.1rem;
+        }
+        
+        /* --- Utilidades --- */
+        hr.my-5 {
+            border-top: 1px solid var(--medium-gray);
+        }
+
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#navbarNav" data-bs-offset="150">
+
+    <div class="gamification-bar">
+        <div class="level-info" id="level-display">Nivel 1: Git Novato</div>
+        <div class="progress" role="progressbar" aria-label="XP progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar" id="xp-progress-bar" style="width: 0%">0%</div>
+        </div>
+        <div class="xp-info" id="xp-display">0 XP</div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top bg-light" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-9 9-4-4"></path><path d="M22 12A10 10 0 1 1 2 12a10 10 0 0 1 20 0Z"></path></svg>
+                Manual Git
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#intro">Introducción</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#conceptos">Conceptos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#instalacion">Instalación</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#configuracion">Configuración</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#repositorios">Repositorios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#workflow">Flujo Básico</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#gitignore">.gitignore</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#ramas">Ramas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#remotos">Remotos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#avanzados">Avanzados</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#terminal">Terminal</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#practicas">Prácticas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#ai-assistant">Asistente IA</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <header class="hero-section">
+            <div class="container">
+                <h1 class="display-4">Manual Esencial de Git y Control de Versiones</h1>
+                <p class="lead">Una guía completa y moderna para dominar Git, el sistema de control de versiones distribuido que impulsa el desarrollo de software actual.</p>
+                <div class="meta-info">
+                    <span>Fecha: 4 de julio de 2025</span> | <span>Autor: Kevin Aráuz</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <section id="intro" class="mb-5 fade-in-section">
+                <h2 class="section-title text-center d-flex justify-content-center align-items-center">
+                    <span>1. ¿Qué es Git y por qué usarlo?</span>
+                    <input class="form-check-input practice-check ms-3" type="checkbox" data-section-id="intro" data-xp="10">
+                </h2>
+                <p class="lead text-center mb-5">Git es un software de control de versiones distribuido, diseñado por Linus Torvalds. Imagínalo como una "máquina del tiempo" para tu código. Te permite guardar diferentes versiones de tu proyecto, volver a estados anteriores, trabajar en equipo sin sobreescribir el trabajo de otros y experimentar con nuevas ideas de forma segura.</p>
+                <blockquote class="blockquote">
+                    <p class="mb-0">"Git es un software de control de versiones diseñado por Linus Torvalds, pensando en la eficiencia, la confiabilidad y compatibilidad del mantenimiento de versiones de aplicaciones cuando estas tienen un gran número de archivos de código fuente."</p>
+                    <footer class="blockquote-footer">Definición adaptada de <cite title="Source Title">Wikipedia</cite></footer>
+                </blockquote>
+            </section>
+
+            <hr class="my-5">
+
+            <section id="conceptos" class="mb-5 fade-in-section">
+                <h2 class="section-title text-center d-flex justify-content-center align-items-center">
+                    <span>2. Conceptos Fundamentales de Git</span>
+                    <input class="form-check-input practice-check ms-3" type="checkbox" data-section-id="conceptos" data-xp="20" data-badge="concept-master">
+                </h2>
+                <p class="text-center lead mb-5">Antes de usar los comandos, es vital entender el vocabulario. Estos son los pilares sobre los que se construye todo en Git.</p>
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title-concept">Repositorio (Repository)</h5>
+                                <p>Es la carpeta de tu proyecto "con superpoderes". Contiene todos tus archivos y, lo más importante, una subcarpeta oculta llamada <code>.git</code>. Esta carpeta es la base de datos que almacena todo el historial de cambios de tu proyecto.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title-concept">Commit</h5>
+                                <p>Es una "instantánea" o un punto de guardado en la historia de tu repositorio. Cada commit guarda el estado exacto de todos tus archivos en un momento dado. Es una unidad atómica de cambio que incluye un mensaje que describe qué se hizo.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title-concept">Rama (Branch)</h5>
+                                <p>Imagina una línea de tiempo de tu proyecto. Una rama es simplemente otra línea de tiempo que se deriva de la principal. Te permite trabajar en una nueva función o corregir un error de forma aislada, sin afectar la versión estable del proyecto.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title-concept">Fusionar (Merge)</h5>
+                                <p>Es el acto de tomar los cambios de una rama (por ejemplo, la de tu nueva función) e integrarlos de nuevo en otra rama (generalmente la principal, llamada <code>main</code>). Git es increíblemente bueno resolviendo estas fusiones automáticamente.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title-concept">HEAD</h5>
+                                <p>Es simplemente un puntero que indica en qué punto de la historia de tu proyecto te encuentras. Normalmente, <code>HEAD</code> apunta a la última confirmación de la rama en la que estás trabajando actualmente.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title-concept">Remoto (Remote)</h5>
+                                <p>Es una versión de tu repositorio que está alojada en un servidor en la nube (como GitHub o GitLab). Sirve como una copia de seguridad centralizada y es la forma principal de colaborar con otros desarrolladores.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-5">
+
+            <section id="instalacion" class="mb-5 fade-in-section">
+                <h2 class="section-title text-center d-flex justify-content-center align-items-center">
+                    <span>3. Instalación de Git</span>
+                    <input class="form-check-input practice-check ms-3" type="checkbox" data-section-id="instalacion" data-xp="10">
+                </h2>
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3,6.7a1.6,1.6,0,0,0-1.8-1.8L12,2,4.5,4.9A1.6,1.6,0,0,0,2.7,6.7V17.3a1.6,1.6,0,0,0,1.8,1.8L12,22l7.5-2.9a1.6,1.6,0,0,0,1.8-1.8Z"/><path d="m12,2,7.5,2.9V17.3L12,22ZM4.5,4.9,12,2v20L4.5,17.3Z"/></svg>
+                                Linux
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Usa el gestor de paquetes de tu distro. En Debian/Ubuntu: <code>sudo apt install git</code>. En Fedora: <code>sudo dnf install git</code>.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="3" y1="9" x2="21" y2="9"></line></svg>
+                                Windows & macOS
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Descarga el instalador oficial desde <a href="https://git-scm.com/downloads" target="_blank" rel="noopener noreferrer">git-scm.com</a>. El asistente te guiará en el proceso.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+                                Verificación
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Tras instalar, abre tu terminal y ejecuta el siguiente comando para confirmar que todo está correcto:</p>
+                                <pre><code>git --version</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-5">
+
+            <section id="configuracion" class="mb-5 fade-in-section">
+                 <h2 class="section-title text-center d-flex justify-content-center align-items-center">
+                    <span>4. Configuración Inicial</span>
+                    <input class="form-check-input practice-check ms-3" type="checkbox" data-section-id="configuracion" data-xp="10">
+                </h2>
+                <p class="text-center lead mb-5">Antes de empezar, configura tu identidad. Esta información se usará en cada commit que realices.</p>
+                <div class="accordion" id="configuracionAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                Configuración Esencial: Tu Identidad
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#configuracionAccordion">
+                            <div class="accordion-body">
+                                <p>Establece tu nombre de usuario y correo electrónico. Estos comandos solo necesitan ejecutarse una vez por computadora.</p>
+                                <pre><code>git config --global user.name "Tu Nombre"
+git config --global user.email "tu.email@ejemplo.com"</code></pre>
+                                <p class="mt-3">La opción <code>--global</code> aplica esta configuración a todos tus proyectos.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Otras Configuraciones Útiles
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#configuracionAccordion">
+                            <div class="accordion-body">
+                                <ul>
+                                    <li><strong>Editor de Texto:</strong> <code>git config --global core.editor "code --wait"</code> (Para VS Code).</li>
+                                    <li><strong>Rama Principal por Defecto:</strong> <code>git config --global init.defaultBranch main</code>.</li>
+                                    <li><strong>Alias:</strong> Crea atajos para comandos largos. Ej: <code>git config --global alias.co checkout</code>.</li>
+                                    <li><strong>Verificar Configuración:</strong> <code>git config --list</code>.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-5">
+
+            <section id="repositorios" class="mb-5 fade-in-section">
+                <h2 class="section-title text-center d-flex justify-content-center align-items-center">
+                    <span>5. Creando Repositorios</span>
+                    <input class="form-check-input practice-check ms-3" type="checkbox" data-section-id="repositorios" data-xp="15">
+                </h2>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title text-primary">Inicializar un Repositorio (<code>git init</code>)</h4>
+                                <p>Convierte un directorio existente en un repositorio de Git.</p>
+                                <pre><code>cd mi-proyecto
+git init</code></pre>
+                                <p>Esto crea una carpeta oculta <code>.git</code> que contiene todo el historial y la configuración.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title text-primary">Clonar un Repositorio (<code>git clone</code>)</h4>
+                                <p>Obtén una copia local de un proyecto existente desde un servidor remoto (como GitHub).</p>
+                                <pre><code>git clone &lt;URL_DEL_REPOSITORIO&gt;</code></pre>
+                                <p>Esto descarga todo el proyecto y su historial completo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <hr class="my-5">
+
+            <section id="workflow" class="mb-5 fade-in-section">
+                <h2 class="section-title text-center d-flex justify-content-center align-items-center">
+                    <span>6. El Flujo de Trabajo Básico de Git</span>
+                    <input class="form-check-input practice-check ms-3" type="checkbox" data-section-id="workflow" data-xp="20" data-badge="workflow-master">
+                </h2>
+                <p class="text-center lead mb-5">Para guardar cambios en Git, los archivos viajan a través de varias etapas. Entender este flujo es crucial para usar Git de manera efectiva.</p>
+                
+                <div class="row text-start mb-5">
+                    <div class="col-md-6 mb-4">
+                        <h5 class="card-title-concept">1. Directorio de Trabajo (Working Directory)</h5>
+                        <p>Esta es tu carpeta de proyecto en tu computadora. Contiene todos los archivos que puedes ver y editar directamente. Cuando haces un cambio, como escribir código o modificar un texto, lo haces aquí. En esta etapa, Git sabe que los archivos existen, pero no está rastreando activamente los cambios que no has preparado.</p>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <h5 class="card-title-concept">2. Área de Preparación (Staging Area)</h5>
+                        <p>Piensa en esto como una sala de espera o un borrador para tu próximo punto de guardado. Antes de hacer un commit, debes "preparar" los cambios que quieres incluir usando el comando <code>git add</code>. Esto te da un control preciso sobre qué cambios se guardarán, permitiéndote agrupar modificaciones relacionadas en un solo commit, incluso si has trabajado en varios archivos.</p>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <h5 class="card-title-concept">3. Repositorio Local (.git)</h5>
+                        <p>Esta es la base de datos de Git en tu propia máquina, ubicada en la carpeta oculta <code>.git</code>. Cuando ejecutas <code>git commit</code>, todos los cambios que estaban en el Staging Area se guardan permanentemente aquí como una nueva "instantánea" en el historial de tu proyecto. Todo este historial vive en tu computadora, por lo que puedes trabajar sin conexión.</p>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <h5 class="card-title-concept">4. Repositorio Remoto (Remote)</h5>
+                        <p>Es una versión de tu repositorio alojada en un servidor externo (como GitHub). Sirve como un punto central para sincronizar tu trabajo y colaborar con otros. Usas <code>git push</code> para enviar tus commits locales al remoto y <code>git pull</code> para traer los cambios de otros a tu repositorio local.</p>
+                    </div>
+                </div>
+
+                <h4 class="text-center mb-4">El Viaje de tus Cambios</h4>
+                <p class="text-center">El siguiente diagrama ilustra cómo tus cambios viajan a través de estas etapas usando los comandos principales de Git.</p>
+                <div class="row flow-diagram align-items-center justify-content-center text-center gy-4">
+                    <div class="col-6 col-md-auto flow-step">
+                        <div class="flow-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-pc-display" viewBox="0 0 16 16"><path d="M8 1a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V1Zm1 13.5a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0Zm2 0a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0ZM9.5 1a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5ZM9 3.5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 0-1h-5a.5.5 0 0 0-.5.5ZM1.5 2A1.5 1.5 0 0 0 0 3.5v7A1.5 1.5 0 0 0 1.5 12H6v2h-1.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1H10v-2h4.5A1.5 1.5 0 0 0 16 10.5v-7A1.5 1.5 0 0 0 14.5 2h-13Z"/></svg>
+                        </div>
+                        <strong>Directorio Trabajo</strong>
+                    </div>
+
+                    <div class="col-auto flow-arrow">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-right-short" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z"/></svg>
+                        <div class="flow-command">git add</div>
+                    </div>
+
+                    <div class="col-6 col-md-auto flow-step">
+                        <div class="flow-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-box-seam" viewBox="0 0 16 16"><path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L8 2.122l3.75 1.339 2.404-.961L8.186 1.113zM14.25 3.777l-2.497.998 2.497.998a.5.5 0 0 0 .498-.497V4.274a.5.5 0 0 0-.498-.497zM1.75 3.777a.5.5 0 0 0-.498.497v.998c0 .276.223.498.498.498l2.497-.998-2.497-.998zM8 14.25l-3.75-1.339-2.404.961a.5.5 0 0 0 .372 0l6.154-2.462a.5.5 0 0 0 .372 0l6.154 2.462a.5.5 0 0 0 .372 0l-2.404-.961L8 14.25z"/><path d="M15.5 4.777v6.446a.5.5 0 0 1-.498.498l-2.497-.998a.5.5 0 0 1-.002-1.001l2.497.998V4.777a.5.5 0 0 1 .498-.497zM.5 4.777a.5.5 0 0 1 .498-.497l2.497.998a.5.5 0 0 1-.002 1.001L.5 5.275V4.777zm3.25.998L8 8.122l3.75-1.339L8 5.444 4.25 6.775z"/></svg>
+                        </div>
+                        <strong>Staging Area</strong>
+                    </div>
+
+                    <div class="col-auto flow-arrow">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-right-short" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z"/></svg>
+                        <div class="flow-command">git commit</div>
+                    </div>
+
+                    <div class="col-6 col-md-auto flow-step">
+                        <div class="flow-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-hdd" viewBox="0 0 16 16"><path d="M4.5 11.5A1.5 1.5 0 1 0 3 10a1.5 1.5 0 0 0 1.5 1.5zM3 10a1 1 0 1 1 2 0 1 1 0 0 1-2 0z"/><path d="M12 10.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zM12 12.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zM5 10.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zM5 12.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z"/><path d="M16 11a5 5 0 0 1-5 5H5a5 5 0 0 1-5-5V5a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v6zM5 1a4 4 0 0 0-4 4v6a4 4 0 0 0 4 4h6a4 4 0 0 0 4-4V5a4 4 0 0 0-4-4H5z"/></svg>
+                        </div>
+                        <strong>Repo Local (.git)</strong>
+                    </div>
+
+                    <div class="col-auto flow-arrow">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-right-short" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z"/></svg>
+                        <div class="flow-command">git push</div>
+                    </div>
+
+                    <div class="col-6 col-md-auto flow-step">
+                        <div class="flow-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-cloud" viewBox="0 0 16 16"><path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z"/></svg>
+                        </div>
+                        <strong>Repo Remoto</strong>
+                    </div>
+                </div>
+                
+            </section>
+
+            <hr class="my-5">
+
+            <section id="gitignore" class="mb-5 fade-in-section">
+                <h2 class="section-title text-center d-flex justify-content-center align-items-center">
+                    <span>7. El Archivo .gitignore: Ignorando Archivos</span>
+                    <input class="form-check-input practice-check ms-3" type="checkbox" data-section-id="gitignore" data-xp="15">
+                </h2>
+                <p class="text-center lead mb-5">No todos los archivos de tu proyecto deben ser guardados en el repositorio. El archivo <code>.gitignore</code> le dice a Git qué archivos o carpetas debe ignorar por completo.</p>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h5>¿Por qué ignorar archivos?</h5>
+                        <ul>
+                            <li><strong>Dependencias:</strong> Carpetas como <code>node_modules</code> pueden contener miles de archivos que se pueden reinstalar fácilmente.</li>
+                            <li><strong>Archivos compilados:</strong> Código que se genera a partir de tu código fuente (ej. archivos <code>.class</code> en Java).</li>
+                            <li><strong>Archivos de entorno:</strong> Archivos como <code>.env</code> que contienen contraseñas o claves de API secretas. ¡Nunca deben subirse a un repositorio público!</li>
+                            <li><strong>Archivos del sistema operativo:</strong> Archivos como <code>.DS_Store</code> en macOS o <code>Thumbs.db</code> en Windows.</li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-6">
+                        <h5>Ejemplo de un <code>.gitignore</code></h5>
+                        <p>Simplemente crea un archivo llamado <code>.gitignore</code> en la raíz de tu proyecto y añade los patrones de los archivos o carpetas a ignorar.</p>
+                        <pre><code># Ignorar archivos de log
+*.log
+
+# Ignorar carpeta de dependencias de Node.js
+node_modules/
+
+# Ignorar archivos de entorno
+.env
+
+# Ignorar carpeta de build
+/dist
+/build
+
+# Ignorar archivos del sistema operativo
+.DS_Store
+Thumbs.db</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-5">
+
+            <section id="ramas" class="mb-5 fade-in-section">
+                <h2 class="section-title text-center d-flex justify-content-center align-items-center">
+                    <span>8. Ramificación y Fusión</span>
+                    <input class="form-check-input practice-check ms-3" type="checkbox" data-section-id="ramas" data-xp="20" data-badge="branch-wizard">
+                </h2>
+                <p class="text-center lead mb-5">Las ramas son la característica estrella de Git. Permiten trabajar en nuevas funcionalidades o arreglos de forma aislada sin afectar la línea principal de desarrollo (<code>main</code>).</p>
+                <ul class="list-group">
+                    <li class="list-group-item"><strong><code>git branch</code>:</strong> Lista todas las ramas. La activa se marca con un <code>*</code>.</li>
+                    <li class="list-group-item"><strong><code>git checkout -b nueva-rama</code>:</strong> Crea una nueva rama y se cambia a ella.</li>
+                    <li class="list-group-item"><strong><code>git checkout main</code>:</strong> Vuelve a la rama principal.</li>
+                    <li class="list-group-item"><strong><code>git merge nueva-rama</code>:</strong> (Estando en <code>main</code>) Fusiona los cambios de <code>nueva-rama</code> en <code>main</code>.</li>
+                    <li class="list-group-item"><strong><code>git branch -d nueva-rama</code>:</strong> Elimina la rama una vez fusionada.</li>
+                </ul>
+            </section>
+
+            <hr class="my-5">
+
+            <section id="remotos" class="mb-5 fade-in-section">
+                 <h2 class="section-title text-center d-flex justify-content-center align-items-center">
+                    <span>9. Colaboración con Remotos</span>
+                    <input class="form-check-input practice-check ms-3" type="checkbox" data-section-id="remotos" data-xp="20">
+                </h2>
+                <p class="text-center lead mb-5">Los repositorios remotos (alojados en servidores como GitHub, GitLab o Bitbucket) son la clave para colaborar con otros y mantener una copia de seguridad de tu trabajo.</p>
+                 <ul class="list-group">
+                    <li class="list-group-item"><strong><code>git remote -v</code>:</strong> Muestra los remotos configurados. Por defecto, <code>origin</code> es el servidor desde el que clonaste.</li>
+                    <li class="list-group-item"><strong><code>git fetch origin</code>:</strong> Descarga toda la información del remoto (nuevos commits, nuevas ramas) pero NO la fusiona con tu trabajo local. Te permite ver qué hay de nuevo antes de integrar.</li>
+                    <li class="list-group-item"><strong><code>git pull origin main</code>:</strong> Es un atajo para <code>git fetch</code> seguido de <code>git merge</code>. Trae los últimos cambios de la rama <code>main</code> del remoto y los fusiona con tu rama local actual.</li>
+                    <li class="list-group-item"><strong><code>git push origin main</code>:</strong> Sube tus commits locales de la rama <code>main</code> al repositorio remoto para compartirlos.</li>
+                </ul>
+                <blockquote class="blockquote mt-4">
+                    <p class="mb-0"><strong>Pull Requests (o Merge Requests)</strong> son el corazón de la colaboración moderna. En lugar de empujar cambios directamente a la rama <code>main</code>, creas una "solicitud de extracción" en plataformas como GitHub. Esto permite que otros revisen tu código, dejen comentarios y lo aprueben antes de que se fusione, garantizando la calidad del código.</p>
+                </blockquote>
+            </section>
+
+            <hr class="my-5">
+
+            <section id="avanzados" class="mb-5 fade-in-section">
+                <h2 class="section-title text-center d-flex justify-content-center align-items-center">
+                    <span>10. Conceptos Avanzados y Flujos de Trabajo</span>
+                    <input class="form-check-input practice-check ms-3" type="checkbox" data-section-id="avanzados" data-xp="30" data-badge="advanced-sorcerer">
+                </h2>
+                <p class="text-center lead mb-5">A medida que tus proyectos crecen, necesitarás estrategias más sofisticadas. Aquí exploramos algunos conceptos y flujos de trabajo clave.</p>
+                
+                <div class="accordion" id="avanzadosAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#avanzado1" aria-expanded="true" aria-controls="avanzado1">
+                                Git Flow: Un Modelo Estructurado
+                            </button>
+                        </h2>
+                        <div id="avanzado1" class="accordion-collapse collapse show" data-bs-parent="#avanzadosAccordion">
+                            <div class="accordion-body">
+                                <p>Git Flow es un modelo de ramificación estricto diseñado para proyectos con ciclos de lanzamiento programados. Utiliza varias ramas con roles específicos:</p>
+                                <ul>
+                                    <li><strong><code>main</code>:</strong> Contiene el código de producción. Solo se fusiona desde ramas de <code>release</code> o <code>hotfix</code>.</li>
+                                    <li><strong><code>develop</code>:</strong> Es la rama de integración principal para las nuevas características. Aquí es donde se concentra el desarrollo diario.</li>
+                                    <li><strong><code>feature/*</code>:</strong> Se crean a partir de <code>develop</code> para trabajar en nuevas funcionalidades. Una vez terminadas, se fusionan de nuevo en <code>develop</code>. (Ej: <code>feature/login-usuario</code>).</li>
+                                    <li><strong><code>release/*</code>:</strong> Se crean a partir de <code>develop</code> cuando se acerca una nueva versión. Permiten preparar el lanzamiento (corrección de errores menores, documentación) sin detener el desarrollo de nuevas características en <code>develop</code>. Una vez listas, se fusionan tanto en <code>main</code> como en <code>develop</code>.</li>
+                                    <li><strong><code>hotfix/*</code>:</strong> Se crean a partir de <code>main</code> para corregir errores críticos en producción. Se fusionan tanto en <code>main</code> como en <code>develop</code> para asegurar que la corrección esté en futuras versiones.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#avanzado2" aria-expanded="false" aria-controls="avanzado2">
+                                Merge vs. Rebase: ¿Cuál usar?
+                            </button>
+                        </h2>
+                        <div id="avanzado2" class="accordion-collapse collapse" data-bs-parent="#avanzadosAccordion">
+                            <div class="accordion-body">
+                                <p>Tanto <code>merge</code> como <code>rebase</code> sirven para integrar cambios de una rama a otra, pero lo hacen de formas muy diferentes.</p>
+                                <p><strong><code>git merge</code>:</strong></p>
+                                <p>Es como decir: "Junta la historia de estas dos ramas". Crea un nuevo "commit de fusión" que une los historiales. Esto preserva la historia exactamente como ocurrió, pero puede resultar en un gráfico de commits desordenado y difícil de leer si muchas personas trabajan en paralelo.</p>
+                                <p><strong><code>git rebase</code>:</strong></p>
+                                <p>Es como decir: "Toma mis cambios y ponlos al final de la otra rama". En lugar de crear un commit de fusión, <code>rebase</code> re-escribe el historial del proyecto moviendo tus commits para que aparezcan después del último commit de la rama de destino. El resultado es un historial lineal y limpio.</p>
+                                <blockquote class="blockquote-sm mt-3"><strong>Regla de oro:</strong> Nunca uses <code>git rebase</code> en ramas públicas (como <code>main</code> o <code>develop</code>) que otros puedan estar usando. Re-escribir el historial compartido puede causar serios problemas. Es seguro usarlo en tus propias ramas de funcionalidades locales antes de fusionarlas.</blockquote>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#avanzado3" aria-expanded="false" aria-controls="avanzado3">
+                                Resolviendo Conflictos de Fusión
+                            </button>
+                        </h2>
+                        <div id="avanzado3" class="accordion-collapse collapse" data-bs-parent="#avanzadosAccordion">
+                            <div class="accordion-body">
+                                <p>Un conflicto ocurre cuando intentas fusionar dos ramas que han modificado la misma parte del mismo archivo. Git no sabe cuál versión conservar, así que te pide que decidas.</p>
+                                <p>Cuando esto sucede, Git marcará el archivo en conflicto con marcadores especiales:</p>
+                                <pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+// Código de tu rama actual (ej. main)
+=======
+// Código de la rama que estás fusionando
+>>>>>>> nombre-de-la-otra-rama</code></pre>
+                                <p>Para resolverlo:</p>
+                                <ol>
+                                    <li>Abre el archivo en tu editor de código.</li>
+                                    <li>Busca los marcadores <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, y <code>>>>>>>></code>.</li>
+                                    <li>Edita el archivo para dejar la versión final que deseas, eliminando los marcadores de Git.</li>
+                                    <li>Guarda el archivo.</li>
+                                    <li>Usa <code>git add &lt;archivo-resuelto&gt;</code> para marcar el conflicto como resuelto.</li>
+                                    <li>Continúa con el proceso con <code>git commit</code> (si fue un merge) o <code>git rebase --continue</code> (si fue un rebase).</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-5">
+
+            <section id="terminal" class="mb-5 fade-in-section">
+                <h2 class="section-title text-center d-flex justify-content-center align-items-center">
+                    <span>11. Comandos Básicos de la Terminal (Git Bash)</span>
+                    <input class="form-check-input practice-check ms-3" type="checkbox" data-section-id="terminal" data-xp="10">
+                </h2>
+                <p class="text-center lead mb-5">Aunque Git tiene sus propios comandos, te moverás por tu sistema de archivos usando una terminal. Git Bash en Windows emula una terminal de Linux. Aquí tienes los comandos más comunes para navegar.</p>
+                 <ul class="list-group">
+                    <li class="list-group-item"><strong><code>pwd</code> (Print Working Directory):</strong> Muestra la ruta completa del directorio (carpeta) en el que te encuentras actualmente.</li>
+                    <li class="list-group-item"><strong><code>ls</code> (List):</strong> Enumera todos los archivos y carpetas visibles en tu directorio actual.</li>
+                    <li class="list-group-item"><strong><code>ls -a</code> (List All):</strong> Similar a <code>ls</code>, pero también muestra los archivos y carpetas ocultos (aquellos que empiezan con un punto, como <code>.git</code>).</li>
+                    <li class="list-group-item"><strong><code>cd &lt;nombre-carpeta&gt;</code> (Change Directory):</strong> Te permite moverte a una carpeta específica. Ejemplo: <code>cd mi-proyecto</code>.</li>
+                    <li class="list-group-item"><strong><code>cd ..</code>:</strong> Te mueve un nivel hacia arriba en la jerarquía de carpetas (a la carpeta contenedora).</li>
+                    <li class="list-group-item"><strong><code>mkdir &lt;nombre-carpeta&gt;</code> (Make Directory):</strong> Crea una nueva carpeta vacía con el nombre que especifiques.</li>
+                    <li class="list-group-item"><strong><code>clear</code>:</strong> Limpia la pantalla de la terminal, ocultando todos los comandos y salidas anteriores para tener una vista limpia.</li>
+                </ul>
+            </section>
+
+            <hr class="my-5">
+
+            <section id="practicas" class="mb-5 fade-in-section">
+                <h2 class="section-title text-center">12. ¡Manos a la Obra! Prácticas Guiadas</h2>
+                <p class="text-center lead mb-5">La mejor forma de aprender es haciendo. Sigue estas prácticas en tu terminal para afianzar los conceptos clave de Git.</p>
+                
+                <div class="accordion" id="practicasAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#practica1" aria-expanded="true" aria-controls="practica1">
+                                <span class="me-auto">Práctica 1: Creando tu Primer Repositorio</span>
+                                <input class="form-check-input practice-check" type="checkbox" data-section-id="practica1" data-xp="25" data-badge="repo-creator">
+                            </button>
+                        </h2>
+                        <div id="practica1" class="accordion-collapse collapse show" data-bs-parent="#practicasAccordion">
+                            <div class="accordion-body">
+                                <p>Vamos a empezar desde cero: crearemos una carpeta para nuestro proyecto y la convertiremos en un repositorio de Git.</p>
+                                <ol>
+                                    <li><strong>Crea una carpeta para el proyecto:</strong><pre><code>mkdir mi-primer-repo</code></pre></li>
+                                    <li><strong>Navega dentro de la nueva carpeta:</strong><pre><code>cd mi-primer-repo</code></pre></li>
+                                    <li><strong>Inicializa Git aquí:</strong><pre><code>git init</code></pre><p class="mt-2">Verás un mensaje como: <code>Initialized empty Git repository in /ruta/a/tu/proyecto/mi-primer-repo/.git/</code>. ¡Felicidades, ya tienes un repositorio!</p></li>
+                                    <li><strong>Verifica que se creó la carpeta <code>.git</code>:</strong><pre><code>ls -a</code></pre><p class="mt-2">Este comando te mostrará la carpeta oculta <code>.git</code>, que es el cerebro de tu repositorio.</p></li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#practica2" aria-expanded="false" aria-controls="practica2">
+                                <span class="me-auto">Práctica 2: Tu Primer Commit</span>
+                                <input class="form-check-input practice-check" type="checkbox" data-section-id="practica2" data-xp="25" data-badge="commit-master">
+                            </button>
+                        </h2>
+                        <div id="practica2" class="accordion-collapse collapse" data-bs-parent="#practicasAccordion">
+                            <div class="accordion-body">
+                                <p>Ahora que tenemos un repositorio, vamos a crear un archivo y a guardar nuestra primera "fotografía" del proyecto.</p>
+                                 <ol>
+                                    <li><strong>Crea un archivo:</strong> El comando <code>touch</code> crea un archivo vacío.<pre><code>touch index.html</code></pre></li>
+                                    <li><strong>Revisa el estado del repositorio:</strong><pre><code>git status</code></pre><p class="mt-2">Git te informará que tienes "Untracked files" (archivos no rastreados). Esto significa que Git ve el archivo, pero no está vigilando sus cambios todavía.</p></li>
+                                    <li><strong>Añade el archivo al Staging Area:</strong> Le decimos a Git que queremos incluir este archivo en nuestro próximo guardado.<pre><code>git add index.html</code></pre></li>
+                                    <li><strong>Revisa el estado de nuevo:</strong><pre><code>git status</code></pre><p class="mt-2">Ahora el archivo aparece bajo "Changes to be committed" (cambios listos para ser confirmados). ¡Está en el área de preparación!</p></li>
+                                    <li><strong>Guarda los cambios en el repositorio:</strong><pre><code>git commit -m "feat: Crea archivo index.html inicial"</code></pre><p class="mt-2">¡Has hecho tu primer commit! El mensaje (<code>-m</code>) es crucial para describir qué hiciste.</p></li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#practica3" aria-expanded="false" aria-controls="practica3">
+                                <span class="me-auto">Práctica 3: Manejando Múltiples Archivos</span>
+                                <input class="form-check-input practice-check" type="checkbox" data-section-id="practica3" data-xp="25" data-badge="multi-file-master">
+                            </button>
+                        </h2>
+                        <div id="practica3" class="accordion-collapse collapse" data-bs-parent="#practicasAccordion">
+                            <div class="accordion-body">
+                                <p>En un proyecto real, trabajarás con muchos archivos. Veamos cómo manejarlos.</p>
+                                 <ol>
+                                    <li><strong>Crea dos archivos más:</strong><pre><code>touch about.html contact.html</code></pre></li>
+                                    <li><strong>Revisa el estado:</strong><pre><code>git status</code></pre><p class="mt-2">Verás que ambos archivos aparecen como "Untracked".</p></li>
+                                    <li><strong>Añade todos los archivos nuevos o modificados al Staging Area de una vez:</strong><pre><code>git add .</code></pre><p class="mt-2">El punto <code>.</code> es un atajo para "todo en el directorio actual".</p></li>
+                                    <li><strong>Confirma los cambios:</strong><pre><code>git commit -m "feat: Agrega las páginas de about y contact"</code></pre></li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#practica4" aria-expanded="false" aria-controls="practica4">
+                                <span class="me-auto">Práctica 4: El Poder del Staging Area</span>
+                                <input class="form-check-input practice-check" type="checkbox" data-section-id="practica4" data-xp="30" data-badge="staging-specialist">
+                            </button>
+                        </h2>
+                        <div id="practica4" class="accordion-collapse collapse" data-bs-parent="#practicasAccordion">
+                            <div class="accordion-body">
+                                <p>El Staging Area te permite crear commits atómicos y limpios, incluyendo solo los cambios que deseas. Vamos a verlo en acción.</p>
+                                 <ol>
+                                    <li><strong>Modifica dos archivos:</strong><pre><code>echo "Página principal" > index.html
+echo "Acerca de nosotros" > about.html</code></pre></li>
+                                    <li><strong>Revisa el estado:</strong><pre><code>git status</code></pre><p class="mt-2">Verás que Git lista ambos archivos como "modified".</p></li>
+                                    <li><strong>Prepara solo el cambio de `index.html`:</strong><pre><code>git add index.html</code></pre></li>
+                                    <li><strong>Revisa el estado de nuevo:</strong> ¡Esta es la parte importante!<pre><code>git status</code></pre><p class="mt-2">Observa cómo ahora tienes dos secciones: "Changes to be committed" (con <code>index.html</code>) y "Changes not staged for commit" (con <code>about.html</code>).</p></li>
+                                    <li><strong>Crea un commit solo con lo preparado:</strong><pre><code>git commit -m "docs: Actualiza contenido de la página de inicio"</code></pre></li>
+                                    <li><strong>Comprueba el estado final:</strong><pre><code>git status</code></pre><p class="mt-2">Git te mostrará que el cambio en <code>about.html</code> sigue pendiente de ser confirmado. ¡Has creado un commit limpio solo con los cambios que querías!</p></li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#practica5" aria-expanded="false" aria-controls="practica5">
+                                <span class="me-auto">Práctica 5: Trabajando con Ramas</span>
+                                <input class="form-check-input practice-check" type="checkbox" data-section-id="practica5" data-xp="35" data-badge="branch-wizard">
+                            </button>
+                        </h2>
+                        <div id="practica5" class="accordion-collapse collapse" data-bs-parent="#practicasAccordion">
+                            <div class="accordion-body">
+                                <p>Vamos a simular la creación de una nueva funcionalidad en una rama separada para no afectar nuestro trabajo principal.</p>
+                                 <ol>
+                                    <li><strong>Crea y cámbiate a una nueva rama:</strong><pre><code>git checkout -b agregar-estilos</code></pre></li>
+                                    <li><strong>Crea un archivo de CSS en la nueva rama:</strong><pre><code>touch styles.css</code></pre></li>
+                                    <li><strong>Añade y confirma el nuevo archivo en esta rama:</strong><pre><code>git add styles.css
+git commit -m "feat: Agrega hoja de estilos"</code></pre></li>
+                                    <li><strong>Regresa a la rama principal:</strong><pre><code>git checkout main</code></pre></li>
+                                    <li><strong>Lista los archivos:</strong><pre><code>ls</code></pre><p class="mt-2">¡Magia! El archivo <code>styles.css</code> ha desaparecido, porque solo existe en la rama <code>agregar-estilos</code>.</p></li>
+                                    <li><strong>Fusiona la nueva funcionalidad:</strong> Trae los cambios de la otra rama a <code>main</code>.<pre><code>git merge agregar-estilos</code></pre></li>
+                                    <li><strong>Lista los archivos de nuevo:</strong><pre><code>ls</code></pre><p class="mt-2">Ahora <code>styles.css</code> aparece en la rama <code>main</code>. Has integrado exitosamente la nueva funcionalidad.</p></li>
+                                    <li><strong>Limpia la rama ya fusionada:</strong><pre><code>git branch -d agregar-estilos</code></pre></li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-5">
+
+            <section id="ai-assistant" class="mb-5 fade-in-section">
+                <h2 class="section-title text-center">13. Asistente Git con IA ✨</h2>
+                <p class="text-center lead mb-5">¿Atascado? Usa el poder de la IA para generar mensajes de commit o encontrar el comando que necesitas.</p>
+                
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title text-primary">Generador de Mensajes de Commit</h4>
+                                <p>Describe los cambios que hiciste en lenguaje natural y la IA creará un mensaje de commit convencional para ti.</p>
+                                <div class="mb-3">
+                                    <label for="commit-description" class="form-label">Describe tus cambios:</label>
+                                    <textarea class="form-control" id="commit-description" rows="4" placeholder="Ej: Agregué la página de contacto con un formulario y validaciones."></textarea>
+                                    <div id="commit-feedback" class="invalid-feedback-custom" style="display: none; color: #dc3545; margin-top: 0.5rem;">Por favor, rellena este campo.</div>
+                                </div>
+                                <button id="generate-commit-btn" class="btn btn-primary">✨ Generar Mensaje</button>
+                                <div id="commit-loader" class="mt-3" style="display: none;">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                                <div id="commit-result" class="mt-3 p-3 ai-result" style="display: none;"></div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title text-primary">Buscador de Comandos</h4>
+                                <p>¿No sabes qué comando usar? Describe lo que quieres hacer y la IA te sugerirá el comando correcto y te lo explicará.</p>
+                                <div class="mb-3">
+                                    <label for="command-description" class="form-label">¿Qué necesitas hacer?</label>
+                                    <textarea class="form-control" id="command-description" rows="4" placeholder="Ej: Quiero volver a la versión anterior de un archivo."></textarea>
+                                    <div id="command-feedback" class="invalid-feedback-custom" style="display: none; color: #dc3545; margin-top: 0.5rem;">Por favor, rellena este campo.</div>
+                                </div>
+                                <button id="find-command-btn" class="btn btn-primary">✨ Encontrar Comando</button>
+                                <div id="command-loader" class="mt-3" style="display: none;">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                                <div id="command-result" class="mt-3 p-3 ai-result" style="display: none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="mt-auto">
+        <div class="container">
+            <p>&copy; 2025 Kevin Aráuz. Todos los derechos reservados.</p>
+            <p class="text-muted-footer">Guía de referencia rápida para el uso diario de Git.</p>
+            <button id="reset-progress-btn" class="btn btn-sm btn-outline-warning mt-2">Reiniciar Progreso</button>
+        </div>
+    </footer>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="badgeToast" class="toast badge-toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto" id="badge-toast-title"></strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="badge-toast-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Lógica de Gamificación ---
+            const gamification = {
+                levels: [
+                    { name: "Git Novato", xpThreshold: 0 },
+                    { name: "Git Aprendiz", xpThreshold: 100 },
+                    { name: "Git Experto", xpThreshold: 250 },
+                    { name: "Git Veterano", xpThreshold: 500 },
+                    { name: "Maestro de Git", xpThreshold: 1000 }
+                ],
+                badges: {
+                    "concept-master": { name: "Maestro Conceptual", description: "¡Has entendido los conceptos clave de Git!" },
+                    "workflow-master": { name: "Maestro del Flujo", description: "¡Dominas el flujo de trabajo de Git!" },
+                    "repo-creator": { name: "Creador de Repos", description: "¡Has creado tu primer repositorio!" },
+                    "commit-master": { name: "Maestro del Commit", description: "¡Tu primer commit está en la historia!" },
+                    "multi-file-master": { name: "Gestor de Archivos", description: "¡Sabes manejar múltiples archivos a la vez!" },
+                    "staging-specialist": { name: "Especialista del Stage", description: "¡Controlas qué entra en cada commit!" },
+                    "branch-wizard": { name: "Mago de las Ramas", description: "¡Creaste y fusionaste tu primera rama!" },
+                    "advanced-sorcerer": { name: "Hechicero Avanzado", description: "¡Has explorado los conceptos avanzados!" }
+                },
+                player: {
+                    level: 1,
+                    xp: 0,
+                    completedSections: [],
+                    unlockedBadges: []
+                },
+                totalXpAvailable: 0,
+
+                init() {
+                    this.calculateTotalXp();
+                    this.load();
+                    this.updateUI();
+                    this.setupCheckboxes();
+                    document.getElementById('reset-progress-btn').addEventListener('click', () => this.reset());
+                },
+
+                calculateTotalXp() {
+                    this.totalXpAvailable = 0;
+                    document.querySelectorAll('[data-xp]').forEach(el => {
+                        this.totalXpAvailable += parseInt(el.dataset.xp, 10);
+                    });
+                },
+
+                load() {
+                    const savedData = localStorage.getItem('gitManualGamification');
+                    if (savedData) {
+                        this.player = JSON.parse(savedData);
+                    }
+                },
+
+                save() {
+                    localStorage.setItem('gitManualGamification', JSON.stringify(this.player));
+                },
+
+                reset() {
+                    if (confirm('¿Estás seguro de que quieres reiniciar todo tu progreso?')) {
+                        localStorage.removeItem('gitManualGamification');
+                        this.player = { level: 1, xp: 0, completedSections: [], unlockedBadges: [] };
+                        this.updateUI();
+                        document.querySelectorAll('.practice-check').forEach(check => {
+                            check.checked = false;
+                        });
+                    }
+                },
+
+                updateProgress(sectionId, xp, badgeId, isComplete) {
+                    if (isComplete) {
+                        if (!this.player.completedSections.includes(sectionId)) {
+                            this.player.xp += xp;
+                            this.player.completedSections.push(sectionId);
+                            if (badgeId) this.unlockBadge(badgeId);
+                        }
+                    } else {
+                        if (this.player.completedSections.includes(sectionId)) {
+                            this.player.xp -= xp;
+                            this.player.completedSections = this.player.completedSections.filter(id => id !== sectionId);
+                            if (badgeId) this.removeBadge(badgeId);
+                        }
+                    }
+                    this.checkLevel();
+                    this.updateUI();
+                    this.save();
+                },
+
+                checkLevel() {
+                    let newLevel = 1;
+                    for (let i = this.levels.length - 1; i >= 0; i--) {
+                        if (this.player.xp >= this.levels[i].xpThreshold) {
+                            newLevel = i + 1;
+                            break;
+                        }
+                    }
+                    if (newLevel !== this.player.level) {
+                        this.showBadge(newLevel > this.player.level ? "¡Subiste de Nivel!" : "Nivel Actualizado", `Ahora eres Nivel ${newLevel}: ${this.levels[newLevel - 1].name}`);
+                        this.player.level = newLevel;
+                    }
+                },
+
+                unlockBadge(badgeId) {
+                    const badge = this.badges[badgeId];
+                    if (badge && !this.player.unlockedBadges.includes(badgeId)) {
+                        this.player.unlockedBadges.push(badgeId);
+                        this.showBadge(`🏅 Insignia Desbloqueada: ${badge.name}`, badge.description);
+                    }
+                },
+                
+                removeBadge(badgeId) {
+                    this.player.unlockedBadges = this.player.unlockedBadges.filter(id => id !== badgeId);
+                },
+
+                showBadge(title, body) {
+                    const toastEl = document.getElementById('badgeToast');
+                    document.getElementById('badge-toast-title').textContent = title;
+                    document.getElementById('badge-toast-body').textContent = body;
+                    const toast = new bootstrap.Toast(toastEl);
+                    toast.show();
+                },
+
+                updateUI() {
+                    const currentLevelIndex = this.player.level - 1;
+                    const currentLevelInfo = this.levels[currentLevelIndex];
+                    
+                    const progressPercentage = this.totalXpAvailable > 0 ? Math.floor((this.player.xp / this.totalXpAvailable) * 100) : 0;
+
+                    document.getElementById('level-display').textContent = `Nivel ${this.player.level}: ${currentLevelInfo.name}`;
+                    document.getElementById('xp-display').textContent = `${this.player.xp} XP`;
+                    
+                    const progressBar = document.getElementById('xp-progress-bar');
+                    progressBar.style.width = `${progressPercentage}%`;
+                    progressBar.textContent = `${progressPercentage}%`;
+                    progressBar.setAttribute('aria-valuenow', progressPercentage);
+                },
+
+                setupCheckboxes() {
+                    const checks = document.querySelectorAll('.practice-check');
+                    checks.forEach(check => {
+                        const sectionId = check.dataset.sectionId;
+                        if (this.player.completedSections.includes(sectionId)) {
+                            check.checked = true;
+                        }
+
+                        check.addEventListener('change', (e) => {
+                            const xp = parseInt(e.target.dataset.xp, 10);
+                            const badgeId = e.target.dataset.badge;
+                            this.updateProgress(sectionId, xp, badgeId, e.target.checked);
+                        });
+                    });
+                }
+            };
+
+            gamification.init();
+
+
+            // --- Efecto de scroll en la barra de navegación ---
+            const nav = document.getElementById('mainNav');
+            if (nav) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 50) {
+                        nav.classList.add('scrolled');
+                    } else {
+                        nav.classList.remove('scrolled');
+                    }
+                });
+            }
+
+            // --- Animaciones de aparición al hacer scroll ---
+            const sections = document.querySelectorAll('.fade-in-section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            // --- Funcionalidad de copiar en bloques de código ---
+            const codeBlocks = document.querySelectorAll('pre');
+            codeBlocks.forEach(block => {
+                const code = block.querySelector('code');
+                const copyButton = document.createElement('button');
+                copyButton.className = 'copy-btn';
+                copyButton.textContent = 'Copiar';
+                
+                copyButton.addEventListener('click', () => {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = code.innerText;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        copyButton.textContent = '¡Copiado!';
+                    } catch (err) {
+                        console.error('Error al copiar', err);
+                        copyButton.textContent = 'Error';
+                    }
+                    document.body.removeChild(textArea);
+
+                    setTimeout(() => {
+                        copyButton.textContent = 'Copiar';
+                    }, 2000);
+                });
+
+                block.appendChild(copyButton);
+            });
+
+            // --- Funcionalidad del Asistente de IA ---
+            const generateCommitBtn = document.getElementById('generate-commit-btn');
+            const commitDescription = document.getElementById('commit-description');
+            const commitLoader = document.getElementById('commit-loader');
+            const commitResult = document.getElementById('commit-result');
+            const commitFeedback = document.getElementById('commit-feedback');
+
+            const findCommandBtn = document.getElementById('find-command-btn');
+            const commandDescription = document.getElementById('command-description');
+            const commandLoader = document.getElementById('command-loader');
+            const commandResult = document.getElementById('command-result');
+            const commandFeedback = document.getElementById('command-feedback');
+
+            const callGemini = async (prompt) => {
+                const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorBody = await response.text();
+                        throw new Error(`La solicitud a la API falló con estado ${response.status}: ${errorBody}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        return result.candidates[0].content.parts[0].text;
+                    } else {
+                        console.error("Estructura de respuesta inesperada de la API:", result);
+                        return "No se pudo obtener una respuesta válida de la IA. Por favor, revisa la consola para más detalles.";
+                    }
+                } catch (error) {
+                    console.error("Error llamando a la API de Gemini:", error);
+                    return `Hubo un error al contactar a la IA: ${error.message}. Asegúrate de tener conexión a internet.`;
+                }
+            };
+
+            generateCommitBtn.addEventListener('click', async () => {
+                const description = commitDescription.value.trim();
+                if (!description) {
+                    commitDescription.classList.add('is-invalid');
+                    commitFeedback.style.display = 'block';
+                    return;
+                }
+                commitDescription.classList.remove('is-invalid');
+                commitFeedback.style.display = 'none';
+
+                commitLoader.style.display = 'block';
+                commitResult.style.display = 'none';
+                commitResult.innerHTML = '';
+
+                const prompt = `Genera un mensaje de commit convencional, conciso y en español basado en la siguiente descripción de cambios. El mensaje DEBE seguir estrictamente el formato: <tipo>(<ámbito>): <asunto>. El tipo debe ser uno de: feat, fix, docs, style, refactor, test, chore. El ámbito es opcional. El asunto debe ser un resumen corto en modo imperativo. No incluyas ninguna otra explicación o texto, solo el mensaje de commit.\n\nDescripción: "${description}"`;
+
+                const generatedText = await callGemini(prompt);
+                
+                commitResult.innerHTML = `<pre><code>${generatedText.trim()}</code></pre>`;
+                commitLoader.style.display = 'none';
+                commitResult.style.display = 'block';
+            });
+
+            findCommandBtn.addEventListener('click', async () => {
+                const description = commandDescription.value.trim();
+                if (!description) {
+                    commandDescription.classList.add('is-invalid');
+                    commandFeedback.style.display = 'block';
+                    return;
+                }
+                commandDescription.classList.remove('is-invalid');
+                commandFeedback.style.display = 'none';
+
+                commandLoader.style.display = 'block';
+                commandResult.style.display = 'none';
+                commandResult.innerHTML = '';
+
+                const prompt = `Basado en la siguiente descripción en español, ¿qué comando o comandos de git se deberían usar? Proporciona el comando dentro de un bloque de código y luego una explicación sencilla en español de lo que hace y por qué es la opción correcta. Formatea la respuesta usando Markdown (usa **negrita** para resaltar y \`código en línea\` para comandos pequeños).\n\nDescripción: "${description}"`;
+
+                const generatedText = await callGemini(prompt);
+                
+                let htmlResult = generatedText
+                    .replace(/```(bash|sh)?\n([\s\S]*?)\n```/g, '<pre><code>$2</code></pre>')
+                    .replace(/`([^`]+)`/g, '<code>$1</code>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\n/g, '<br>');
+
+                commandResult.innerHTML = htmlResult;
+                commandLoader.style.display = 'none';
+                commandResult.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
