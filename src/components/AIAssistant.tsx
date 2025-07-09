@@ -225,7 +225,8 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
+      {/* Herramientas IA */}
+      <div className="space-y-8">
         {/* Generador de Mensajes de Commit */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
@@ -374,7 +375,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
           </p>
 
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Primer comando:
