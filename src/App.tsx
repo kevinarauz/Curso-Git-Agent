@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
 import { GameProvider } from './contexts/GameContext';
+import GitManualPage from './components/GitManualPage';
+import AIAssistant from './components/AIAssistant';
+import GlossaryPage from './components/GlossaryPage';
+import AchievementsPage from './components/AchievementsPage';
+import ExercisesPage from './components/ExercisesPage';
+import Footer from './components/Footer';
+import ToastContainer, { type ToastMessage } from './components/ToastContainer';
+import GamificationBar from './components/GamificationBar';
 import { 
   BookOpen, 
   Trophy, 
@@ -8,7 +16,7 @@ import {
   User, 
   Settings, 
   Home,
-  Search,
+  Bot,
   Menu,
   X
 } from 'lucide-react';
@@ -20,7 +28,8 @@ const Navigation = ({ activeTab, setActiveTab }: { activeTab: string; setActiveT
 
   const navItems = [
     { id: 'home', label: 'Inicio', icon: Home },
-    { id: 'modules', label: 'Módulos', icon: BookOpen },
+    { id: 'manual', label: 'Manual Git', icon: BookOpen },
+    { id: 'ai-assistant', label: 'IA Asistente', icon: Bot },
     { id: 'exercises', label: 'Ejercicios', icon: Target },
     { id: 'glossary', label: 'Glosario', icon: BookMarked },
     { id: 'achievements', label: 'Logros', icon: Trophy },
@@ -238,19 +247,63 @@ const PlaceholderPage = ({ title, description }: { title: string; description: s
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  const addToast = (toast: Omit<ToastMessage, 'id'>) => {
+    const newToast: ToastMessage = {
+      ...toast,
+      id: Date.now().toString(),
+    };
+    setToasts(prev => [...prev, newToast]);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
+
+  // Escuchar eventos globales de gamificación
+  React.useEffect(() => {
+    const handlePointsEarned = (event: CustomEvent) => {
+      addToast({
+        type: 'points',
+        title: '¡Puntos Ganados!',
+        message: `Has ganado ${event.detail.points} XP`,
+        duration: 3000,
+      });
+    };
+
+    const handleBadgeUnlocked = (event: CustomEvent) => {
+      addToast({
+        type: 'badge',
+        title: '🏅 ¡Badge Desbloqueado!',
+        message: event.detail.badge.name,
+        duration: 5000,
+      });
+    };
+
+    window.addEventListener('points-earned', handlePointsEarned as EventListener);
+    window.addEventListener('badge-unlocked', handleBadgeUnlocked as EventListener);
+
+    return () => {
+      window.removeEventListener('points-earned', handlePointsEarned as EventListener);
+      window.removeEventListener('badge-unlocked', handleBadgeUnlocked as EventListener);
+    };
+  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
       case 'home':
         return <HomePage />;
-      case 'modules':
-        return <PlaceholderPage title="Módulos de Aprendizaje" description="Explora nuestros módulos interactivos de Git, GitLab y GitHub Desktop" />;
+      case 'manual':
+        return <GitManualPage />;
+      case 'ai-assistant':
+        return <AIAssistant />;
       case 'exercises':
-        return <PlaceholderPage title="Ejercicios Prácticos" description="Practica tus habilidades con simuladores y desafíos interactivos" />;
+        return <ExercisesPage />;
       case 'glossary':
-        return <PlaceholderPage title="Glosario" description="Consulta términos y definiciones de Git, GitLab y GitHub" />;
+        return <GlossaryPage />;
       case 'achievements':
-        return <PlaceholderPage title="Logros y Badges" description="Visualiza tu progreso y desbloquea nuevos logros" />;
+        return <AchievementsPage />;
       case 'profile':
         return <PlaceholderPage title="Mi Perfil" description="Gestiona tu perfil y configuraciones" />;
       default:
@@ -260,11 +313,14 @@ function App() {
 
   return (
     <GameProvider>
-      <div className="App">
+      <div className="App min-h-screen flex flex-col">
+        <GamificationBar />
         <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
-        <main>
+        <main className="flex-1">
           {renderContent()}
         </main>
+        <Footer />
+        <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
       </div>
     </GameProvider>
   );

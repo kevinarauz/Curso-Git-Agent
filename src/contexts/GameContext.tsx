@@ -1,5 +1,13 @@
-import React, { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useState, type ReactNode } from 'react';
 import type { GameContextType, User, GameProgress, Settings, Badge } from '../types';
+
+export interface ToastMessage {
+  id: string;
+  type: 'badge' | 'level' | 'points';
+  title: string;
+  message: string;
+  duration?: number;
+}
 
 // Estado inicial
 const initialUser: User = {
