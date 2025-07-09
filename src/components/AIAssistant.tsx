@@ -14,11 +14,13 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
   const [commitResult, setCommitResult] = useState('');
   const [commitLoading, setCommitLoading] = useState(false);
   const [commitError, setCommitError] = useState('');
+  const [commitContinuing, setCommitContinuing] = useState(false);
 
   const [commandDescription, setCommandDescription] = useState('');
   const [commandResult, setCommandResult] = useState('');
   const [commandLoading, setCommandLoading] = useState(false);
   const [commandError, setCommandError] = useState('');
+  const [commandContinuing, setCommandContinuing] = useState(false);
 
   // Comparador de comandos
   const [command1, setCommand1] = useState('git pull');
@@ -26,12 +28,14 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
   const [comparisonResult, setComparisonResult] = useState('');
   const [comparisonLoading, setComparisonLoading] = useState(false);
   const [comparisonError, setComparisonError] = useState('');
+  const [comparisonContinuing, setComparisonContinuing] = useState(false);
 
   // Solucionador de errores
   const [errorDescription, setErrorDescription] = useState('');
   const [errorSolution, setErrorSolution] = useState('');
   const [errorLoading, setErrorLoading] = useState(false);
   const [errorError, setErrorError] = useState('');
+  const [errorContinuing, setErrorContinuing] = useState(false);
 
   const [showConfig, setShowConfig] = useState(false);
   const [tempApiKey, setTempApiKey] = useState('');
@@ -46,9 +50,12 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
     setCommitError('');
     setCommitLoading(true);
     setCommitResult('');
+    setCommitContinuing(false);
 
     try {
-      const result = await generateText(commitDescription, 'commit');
+      const result = await generateText(commitDescription, 'commit', (status) => {
+        setCommitContinuing(status === 'continuing');
+      });
       
       if (result.success) {
         setCommitResult(result.content);
@@ -59,6 +66,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
       setCommitError('Error de conexión. Verifica tu configuración de API.');
     } finally {
       setCommitLoading(false);
+      setCommitContinuing(false);
     }
   };
 
@@ -71,9 +79,12 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
     setCommandError('');
     setCommandLoading(true);
     setCommandResult('');
+    setCommandContinuing(false);
 
     try {
-      const result = await generateText(commandDescription, 'command');
+      const result = await generateText(commandDescription, 'command', (status) => {
+        setCommandContinuing(status === 'continuing');
+      });
       
       if (result.success) {
         setCommandResult(result.content);
@@ -84,6 +95,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
       setCommandError('Error de conexión. Verifica tu configuración de API.');
     } finally {
       setCommandLoading(false);
+      setCommandContinuing(false);
     }
   };
 
@@ -96,10 +108,13 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
     setComparisonError('');
     setComparisonLoading(true);
     setComparisonResult('');
+    setComparisonContinuing(false);
 
     try {
       const prompt = `Para un principiante en Git, explica la diferencia fundamental entre los comandos "${command1}" y "${command2}". Enfócate en su propósito principal, cuándo es mejor usar cada uno, y los posibles riesgos o resultados. La respuesta debe ser clara, concisa y en español.`;
-      const result = await generateText(prompt, 'command');
+      const result = await generateText(prompt, 'command', (status) => {
+        setComparisonContinuing(status === 'continuing');
+      });
       
       if (result.success) {
         setComparisonResult(result.content);
@@ -110,6 +125,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
       setComparisonError('Error de conexión. Verifica tu configuración de IA.');
     } finally {
       setComparisonLoading(false);
+      setComparisonContinuing(false);
     }
   };
 
@@ -122,10 +138,13 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
     setErrorError('');
     setErrorLoading(true);
     setErrorSolution('');
+    setErrorContinuing(false);
 
     try {
       const prompt = `Como un experto en Git, he recibido el siguiente mensaje de error: "${errorDescription}". Explícame en español, de forma sencilla, qué significa este error, por qué ocurre comúnmente y dame los pasos claros para solucionarlo.`;
-      const result = await generateText(prompt, 'command');
+      const result = await generateText(prompt, 'command', (status) => {
+        setErrorContinuing(status === 'continuing');
+      });
       
       if (result.success) {
         setErrorSolution(result.content);
@@ -136,6 +155,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
       setErrorError('Error de conexión. Verifica tu configuración de IA.');
     } finally {
       setErrorLoading(false);
+      setErrorContinuing(false);
     }
   };
 
@@ -321,7 +341,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
               {commitLoading ? (
                 <>
                   <Loader className="w-4 h-4 animate-spin" />
-                  <span>Generando...</span>
+                  <span>{commitContinuing ? 'Continuando respuesta...' : 'Generando...'}</span>
                 </>
               ) : (
                 <>
@@ -342,6 +362,12 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
                     <Copy className="w-4 h-4" />
                   </button>
                 </div>
+                {commitContinuing && (
+                  <div className="mb-3 flex items-center text-sm text-blue-600">
+                    <Loader className="w-4 h-4 animate-spin mr-2" />
+                    Continuando respuesta...
+                  </div>
+                )}
                 <div className="border border-gray-200 rounded">
                   <pre className="bg-gray-900 text-green-400 p-3 text-sm overflow-x-auto whitespace-pre-wrap">
                     <code>{commitResult}</code>
@@ -391,7 +417,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
               {commandLoading ? (
                 <>
                   <Loader className="w-4 h-4 animate-spin" />
-                  <span>Buscando...</span>
+                  <span>{commandContinuing ? 'Continuando respuesta...' : 'Buscando...'}</span>
                 </>
               ) : (
                 <>
@@ -412,6 +438,12 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
                     <Copy className="w-4 h-4" />
                   </button>
                 </div>
+                {commandContinuing && (
+                  <div className="mb-3 flex items-center text-sm text-blue-600">
+                    <Loader className="w-4 h-4 animate-spin mr-2" />
+                    Continuando respuesta...
+                  </div>
+                )}
                 <div className="border border-gray-200 rounded p-3 bg-white">
                   <div 
                     className="prose prose-sm max-w-none text-sm leading-relaxed"
@@ -486,7 +518,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
                   {comparisonLoading ? (
                     <>
                       <Loader className="w-4 h-4 animate-spin" />
-                      <span>Comparando...</span>
+                      <span>{comparisonContinuing ? 'Continuando respuesta...' : 'Comparando...'}</span>
                     </>
                   ) : (
                     <>
@@ -559,7 +591,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
               {errorLoading ? (
                 <>
                   <Loader className="w-4 h-4 animate-spin" />
-                  <span>Analizando...</span>
+                  <span>{errorContinuing ? 'Continuando respuesta...' : 'Analizando...'}</span>
                 </>
               ) : (
                 <>
@@ -673,13 +705,23 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
         </div>
       )}
 
-      <div className="mt-8 p-4 bg-blue-50 rounded-lg">
+      <div className="mt-8 p-4 bg-green-50 rounded-lg border border-green-200">
+        <h3 className="font-medium text-green-900 mb-2">🚀 Nueva funcionalidad: Respuestas largas</h3>
+        <p className="text-sm text-green-800">
+          Ahora cuando una respuesta de IA es muy larga y se corta por límites de tokens, 
+          <strong className="mx-1">se continuará automáticamente</strong> 
+          para que obtengas la respuesta completa. Verás un indicador "Continuando respuesta..." durante el proceso.
+        </p>
+      </div>
+
+      <div className="mt-4 p-4 bg-blue-50 rounded-lg">
         <h3 className="font-medium text-blue-900 mb-2">💡 Consejos para usar el asistente:</h3>
         <ul className="text-sm text-blue-800 space-y-1">
           <li>• <strong>Commits:</strong> Sé específico en tus descripciones para obtener mejores mensajes</li>
           <li>• <strong>Comandos:</strong> Describe exactamente lo que quieres lograr</li>
           <li>• <strong>Comparaciones:</strong> Usa esta herramienta cuando no sepas cuál comando es mejor</li>
           <li>• <strong>Errores:</strong> Copia el mensaje de error completo para una mejor diagnosis</li>
+          <li>• <strong>Respuestas largas:</strong> Si una respuesta se corta, se continuará automáticamente</li>
           <li>• Siempre revisa las sugerencias antes de usarlas en tu proyecto</li>
         </ul>
       </div>

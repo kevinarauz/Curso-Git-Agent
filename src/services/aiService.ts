@@ -56,8 +56,8 @@ class AIService {
     }
   }
 
-  // Método principal para generar texto
-  async generateText(prompt: string, type: 'commit' | 'command' = 'commit'): Promise<AIResponse> {
+  // Método principal para generar texto con callbacks de progreso
+  async generateText(prompt: string, type: 'commit' | 'command' = 'commit', onProgress?: (status: 'loading' | 'continuing') => void): Promise<AIResponse> {
     try {
       // Obtener API key del localStorage o variables de entorno
       const apiKey = this.getApiKey();
@@ -70,11 +70,13 @@ class AIService {
         };
       }
 
+      onProgress?.('loading');
+
       switch (this.config.provider) {
         case 'openai':
           return await this.callOpenAI(prompt, type, apiKey);
         case 'gemini':
-          return await this.callGemini(prompt, type, apiKey);
+          return await this.callGeminiWithProgress(prompt, type, apiKey, onProgress);
         case 'ollama':
           return await this.callOllama(prompt, type);
         case 'anthropic':
@@ -88,6 +90,27 @@ class AIService {
       }
     } catch (error) {
       console.error('Error en AIService:', error);
+      return {
+        success: false,
+        content: '',
+        error: error instanceof Error ? error.message : 'Error desconocido'
+      };
+    }
+  }
+
+  private async callGeminiWithProgress(prompt: string, type: string, apiKey: string, onProgress?: (status: 'loading' | 'continuing') => void): Promise<AIResponse> {
+    try {
+      const fullPrompt = this.formatPrompt(prompt, type, 'gemini');
+      const response = await this.callGeminiSingle(fullPrompt, apiKey);
+      
+      // Si la respuesta se cortó, intentar continuación automática
+      if (response.wasTruncated) {
+        onProgress?.('continuing');
+        return await this.continueGeminiResponse(response.content, fullPrompt, apiKey);
+      }
+      
+      return response;
+    } catch (error) {
       return {
         success: false,
         content: '',
@@ -137,10 +160,7 @@ class AIService {
     };
   }
 
-  // Google Gemini
-  private async callGemini(prompt: string, type: string, apiKey: string): Promise<AIResponse> {
-    const fullPrompt = this.formatPrompt(prompt, type, 'gemini');
-    
+  private async callGeminiSingle(prompt: string, apiKey: string, maxTokens: number = 2048): Promise<AIResponse & {wasTruncated?: boolean}> {
     const response = await fetch(`${this.config.baseUrl}/models/${this.config.model}:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: {
@@ -148,11 +168,11 @@ class AIService {
       },
       body: JSON.stringify({
         contents: [{
-          parts: [{ text: fullPrompt }]
+          parts: [{ text: prompt }]
         }],
         generationConfig: {
           temperature: 0.7,
-          maxOutputTokens: 150,
+          maxOutputTokens: maxTokens,
         }
       }),
     });
@@ -163,7 +183,10 @@ class AIService {
     }
 
     const data = await response.json();
+    console.log('Gemini Response:', data); // Para debug
+    
     const content = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    const finishReason = data.candidates?.[0]?.finishReason;
 
     if (!content) {
       throw new Error('Respuesta vacía de Gemini');
@@ -171,8 +194,80 @@ class AIService {
 
     return {
       success: true,
-      content
+      content,
+      wasTruncated: finishReason === 'MAX_TOKENS'
     };
+  }
+
+  private async continueGeminiResponse(partialContent: string, originalPrompt: string, apiKey: string, maxAttempts: number = 3): Promise<AIResponse> {
+    let fullContent = partialContent;
+    let attempts = 0;
+    
+    while (attempts < maxAttempts) {
+      attempts++;
+      
+      // Crear prompt de continuación
+      const continuePrompt = `Continuación de la respuesta anterior:
+
+Contexto original: ${originalPrompt}
+
+Respuesta parcial hasta ahora:
+${fullContent}
+
+Por favor, continúa exactamente desde donde se cortó la respuesta anterior. Si es necesario, incluye al final "---CONTINUAR---" si la respuesta sigue siendo muy larga.`;
+      
+      try {
+        const response = await this.callGeminiSingle(continuePrompt, apiKey, 2048);
+        
+        // Concatenar la nueva parte
+        const newContent = response.content;
+        
+        // Si la nueva parte empieza repitiendo el final, limpiarlo
+        const cleanNewContent = this.cleanContinuationOverlap(fullContent, newContent);
+        fullContent += '\n' + cleanNewContent;
+        
+        // Si no se cortó esta vez, hemos terminado
+        if (!response.wasTruncated && !cleanNewContent.includes('---CONTINUAR---')) {
+          break;
+        }
+        
+        // Si incluye la marca de continuar, removerla para la próxima iteración
+        if (cleanNewContent.includes('---CONTINUAR---')) {
+          fullContent = fullContent.replace('---CONTINUAR---', '').trim();
+        }
+        
+      } catch (error) {
+        console.warn(`Error en intento de continuación ${attempts}:`, error);
+        if (attempts === maxAttempts) {
+          // Si fallaron todos los intentos, devolver lo que tenemos
+          fullContent += '\n\n[Nota: La respuesta fue cortada debido a límites de tokens]';
+        }
+        break;
+      }
+    }
+    
+    return {
+      success: true,
+      content: fullContent
+    };
+  }
+
+  private cleanContinuationOverlap(existingContent: string, newContent: string): string {
+    // Obtener las últimas 100 caracteres del contenido existente
+    const suffix = existingContent.slice(-100).trim();
+    
+    // Si el nuevo contenido empieza con parte del sufijo, remover la superposición
+    if (suffix.length > 20) {
+      const words = suffix.split(' ');
+      for (let i = words.length - 1; i >= words.length - 5 && i >= 0; i--) {
+        const overlap = words.slice(i).join(' ');
+        if (newContent.toLowerCase().startsWith(overlap.toLowerCase())) {
+          return newContent.slice(overlap.length).trim();
+        }
+      }
+    }
+    
+    return newContent;
   }
 
   // Ollama (local)
@@ -263,9 +358,14 @@ class AIService {
         ? 'Eres un experto en Git. '
         : '';
       
+      const continuationInstruction = provider === 'gemini' 
+        ? '\n\nIMPORTANTE: Si tu respuesta es muy larga y se corta por límite de tokens, incluye al final exactamente "---CONTINUAR---" para que pueda pedirte que continúes.'
+        : '';
+      
       return `${prefix}Basado en: "${userPrompt}", ¿qué comando(s) de Git debo usar? 
-              Proporciona el comando en un bloque de código y una explicación breve en español.
-              Usa formato markdown: \`\`\`bash para comandos y **negrita** para resaltar.`;
+              Proporciona el comando en un bloque de código y una explicación detallada en español.
+              Usa formato markdown: \`\`\`bash para comandos y **negrita** para resaltar.
+              Incluye ejemplos prácticos si es necesario.${continuationInstruction}`;
     }
   }
 
