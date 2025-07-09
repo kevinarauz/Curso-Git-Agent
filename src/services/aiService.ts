@@ -23,7 +23,7 @@ const DEFAULT_CONFIG: Record<string, AIConfig> = {
   },
   gemini: {
     provider: 'gemini',
-    model: 'gemini-pro',
+    model: 'gemini-2.0-flash',
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta'
   },
   ollama: {
@@ -42,12 +42,18 @@ class AIService {
   private config: AIConfig;
 
   constructor(config?: Partial<AIConfig>) {
-    // Usar OpenAI por defecto, o el proveedor especificado
-    const provider = config?.provider || 'openai';
+    // Usar Gemini por defecto con tu API key
+    const provider = config?.provider || 'gemini';
     this.config = {
       ...DEFAULT_CONFIG[provider],
       ...config
     };
+    
+    // Configurar tu API key de Gemini por defecto
+    if (provider === 'gemini' && !localStorage.getItem(`ai-api-key-${provider}`)) {
+      localStorage.setItem('ai-api-key-gemini', 'AIzaSyCypmLSsEUQ7qoCYZXjy_pbXRKVR1a51D0');
+      localStorage.setItem('ai-provider', 'gemini');
+    }
   }
 
   // Método principal para generar texto
@@ -297,8 +303,8 @@ class AIService {
   }
 }
 
-// Instancia singleton
-export const aiService = new AIService();
+// Instancia singleton con Gemini por defecto
+export const aiService = new AIService({ provider: 'gemini' });
 
 // Hook para usar el servicio en React
 export const useAI = () => {

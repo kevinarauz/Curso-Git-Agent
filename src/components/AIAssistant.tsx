@@ -21,7 +21,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
 
   const [showConfig, setShowConfig] = useState(false);
   const [tempApiKey, setTempApiKey] = useState('');
-  const [currentProvider, setCurrentProvider] = useState(getConfig().provider);
+  const [currentProvider, setCurrentProvider] = useState(getConfig().provider || 'gemini');
 
   const generateCommit = async () => {
     if (!commitDescription.trim()) {
@@ -74,8 +74,18 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
   };
 
   const handleSaveConfig = () => {
-    if (tempApiKey.trim()) {
-      setApiKey(tempApiKey);
+    // Para Gemini, si no hay API key temporal, mantener la actual
+    if (currentProvider === 'gemini' && !tempApiKey.trim()) {
+      setProvider(currentProvider);
+      setShowConfig(false);
+      return;
+    }
+    
+    // Para otros proveedores o si hay nueva API key
+    if (tempApiKey.trim() || currentProvider === 'ollama') {
+      if (tempApiKey.trim()) {
+        setApiKey(tempApiKey);
+      }
       setProvider(currentProvider, tempApiKey);
       setShowConfig(false);
       setTempApiKey('');
@@ -298,8 +308,8 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
                 onChange={(e) => setCurrentProvider(e.target.value as any)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
+                <option value="gemini">Google Gemini (Recomendado)</option>
                 <option value="openai">OpenAI (GPT)</option>
-                <option value="gemini">Google Gemini</option>
                 <option value="anthropic">Anthropic (Claude)</option>
                 <option value="ollama">Ollama (Local)</option>
               </select>
@@ -313,7 +323,11 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
                 type="password"
                 value={tempApiKey}
                 onChange={(e) => setTempApiKey(e.target.value)}
-                placeholder={currentProvider === 'ollama' ? 'No requerida para Ollama' : 'Ingresa tu API key'}
+                placeholder={
+                  currentProvider === 'ollama' ? 'No requerida para Ollama' : 
+                  currentProvider === 'gemini' ? 'Ya configurado - Opcional cambiar' :
+                  'Ingresa tu API key'
+                }
                 disabled={currentProvider === 'ollama'}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
               />
@@ -328,7 +342,10 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
                   <p>• Obtén tu API key en: <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="underline">OpenAI Platform</a></p>
                 )}
                 {currentProvider === 'gemini' && (
-                  <p>• Obtén tu API key en: <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="underline">Google AI Studio</a></p>
+                  <div>
+                    <p>• ✅ <strong>Ya configurado</strong> - Gemini 2.0 Flash listo para usar</p>
+                    <p>• Si necesitas cambiar la API key: <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="underline">Google AI Studio</a></p>
+                  </div>
                 )}
                 {currentProvider === 'anthropic' && (
                   <p>• Obtén tu API key en: <a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer" className="underline">Anthropic Console</a></p>
