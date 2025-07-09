@@ -6,8 +6,6 @@ import {
   GitMerge, 
   Terminal, 
   FileText,
-  CheckCircle,
-  Award,
   Copy,
   ChevronDown,
   ChevronRight,
@@ -16,11 +14,7 @@ import {
   Folder,
   Cloud,
   Eye,
-  Bot,
-  Play,
-  RefreshCw,
-  Upload,
-  X
+  Play
 } from 'lucide-react';
 
 interface Section {
@@ -103,7 +97,7 @@ const GitManualPage: React.FC = () => {
     return descriptions[badge] || 'Has completado una sección especial';
   };
 
-  const CodeBlock: React.FC<{ children: string; language?: string }> = ({ children, language = 'bash' }) => {
+  const CodeBlock: React.FC<{ children: string }> = ({ children }) => {
     const [copied, setCopied] = useState(false);
 
     const copyToClipboard = () => {
@@ -676,6 +670,101 @@ Thumbs.db`}</CodeBlock>
       )
     },
     {
+      id: 'terminal',
+      title: '9. Comandos Básicos de la Terminal (Git Bash)',
+      xp: 15,
+      content: (
+        <div className="space-y-6">
+          <p className="text-lg text-gray-700 leading-relaxed">
+            Aunque Git tiene sus propios comandos, te moverás por tu sistema de archivos usando una terminal. 
+            Git Bash en Windows emula una terminal de Linux. Aquí tienes los comandos más comunes para navegar.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h4 className="font-bold text-gray-800 mb-4 flex items-center">
+                <Terminal className="w-5 h-5 mr-2 text-blue-600" />
+                Navegación y Archivos
+              </h4>
+              <div className="space-y-3">
+                <div>
+                  <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">pwd</code>
+                  <p className="text-gray-600 text-sm mt-1">Mostrar directorio actual</p>
+                </div>
+                <div>
+                  <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">ls</code>
+                  <p className="text-gray-600 text-sm mt-1">Listar archivos y carpetas</p>
+                </div>
+                <div>
+                  <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">ls -la</code>
+                  <p className="text-gray-600 text-sm mt-1">Listar con detalles (incluso ocultos)</p>
+                </div>
+                <div>
+                  <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">cd carpeta</code>
+                  <p className="text-gray-600 text-sm mt-1">Cambiar a una carpeta</p>
+                </div>
+                <div>
+                  <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">cd ..</code>
+                  <p className="text-gray-600 text-sm mt-1">Subir un nivel</p>
+                </div>
+                <div>
+                  <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">cd ~</code>
+                  <p className="text-gray-600 text-sm mt-1">Ir al directorio home</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h4 className="font-bold text-gray-800 mb-4 flex items-center">
+                <FileText className="w-5 h-5 mr-2 text-green-600" />
+                Crear y Manipular
+              </h4>
+              <div className="space-y-3">
+                <div>
+                  <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">mkdir nombre</code>
+                  <p className="text-gray-600 text-sm mt-1">Crear carpeta</p>
+                </div>
+                <div>
+                  <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">touch archivo.txt</code>
+                  <p className="text-gray-600 text-sm mt-1">Crear archivo vacío</p>
+                </div>
+                <div>
+                  <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">echo "texto" {'>'} archivo.txt</code>
+                  <p className="text-gray-600 text-sm mt-1">Crear archivo con contenido</p>
+                </div>
+                <div>
+                  <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">cat archivo.txt</code>
+                  <p className="text-gray-600 text-sm mt-1">Ver contenido de archivo</p>
+                </div>
+                <div>
+                  <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">rm archivo.txt</code>
+                  <p className="text-gray-600 text-sm mt-1">Eliminar archivo</p>
+                </div>
+                <div>
+                  <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">rm -rf carpeta</code>
+                  <p className="text-gray-600 text-sm mt-1">Eliminar carpeta y su contenido</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 className="font-bold text-blue-900 mb-2 flex items-center">
+              <Terminal className="w-5 h-5 mr-2" />
+              💡 Consejos para la Terminal
+            </h4>
+            <ul className="text-blue-800 space-y-1">
+              <li>• Usa <kbd>Tab</kbd> para autocompletar nombres de archivos y carpetas</li>
+              <li>• Usa las flechas ↑↓ para navegar por el historial de comandos</li>
+              <li>• <code>Ctrl+C</code> cancela un comando en ejecución</li>
+              <li>• <code>clear</code> limpia la pantalla de la terminal</li>
+              <li>• Los archivos que empiezan con <code>.</code> están ocultos</li>
+            </ul>
+          </div>
+        </div>
+      )
+    },
+    {
       id: 'avanzados',
       title: '10. Conceptos Avanzados',
       xp: 30,
@@ -761,6 +850,249 @@ git stash apply stash@{0}`}</CodeBlock>
           </div>
         </div>
       )
+    },
+    {
+      id: 'practicas',
+      title: '11. ¡Manos a la Obra! Prácticas Guiadas',
+      xp: 25,
+      badge: 'hands-on-hero',
+      content: (
+        <div className="space-y-6">
+          <p className="text-lg text-gray-700 leading-relaxed">
+            La mejor forma de aprender es haciendo. Sigue estas prácticas en tu terminal para 
+            afianzar los conceptos clave de Git. Cada ejercicio te ayudará a dominar una habilidad específica.
+          </p>
+
+          <div className="grid gap-6">
+            {/* Práctica 1: Tu primer repositorio */}
+            <details className="bg-white rounded-lg shadow-md">
+              <summary className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-t-lg cursor-pointer font-bold">
+                🚀 Práctica 1: Tu Primer Repositorio
+              </summary>
+              <div className="p-6">
+                <div className="bg-blue-50 border border-blue-200 rounded p-3 mb-4">
+                  <p className="text-blue-800 text-sm">
+                    <strong>🎯 Objetivo:</strong> Crear tu primer repositorio Git y hacer tu primer commit.
+                  </p>
+                </div>
+                <h5 className="font-bold text-gray-800 mb-3">Pasos a seguir:</h5>
+                <ol className="space-y-3 text-gray-700">
+                  <li>
+                    <strong>1. Crea una carpeta para tu proyecto:</strong>
+                    <CodeBlock>{`mkdir mi-primer-proyecto
+cd mi-primer-proyecto`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>2. Inicializa Git:</strong>
+                    <CodeBlock>{`git init`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">Verás el mensaje "Initialized empty Git repository..."</p>
+                  </li>
+                  <li>
+                    <strong>3. Crea tu primer archivo:</strong>
+                    <CodeBlock>{`echo "# Mi Primer Proyecto" {'>'} README.md`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>4. Revisa el estado:</strong>
+                    <CodeBlock>{`git status`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">Git te mostrará que hay archivos "untracked"</p>
+                  </li>
+                  <li>
+                    <strong>5. Configura tu identidad (si no lo has hecho):</strong>
+                    <CodeBlock>{`git config --global user.name "Tu Nombre"
+git config --global user.email "tu.email@ejemplo.com"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>6. Prepara y confirma tu primer commit:</strong>
+                    <CodeBlock>{`git add README.md
+git commit -m "feat: agregar README inicial"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>7. Ve tu historial:</strong>
+                    <CodeBlock>{`git log --oneline`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">🎉 ¡Felicidades! Has creado tu primer repositorio Git</p>
+                  </li>
+                </ol>
+              </div>
+            </details>
+
+            {/* Práctica 2: Trabajando con el área de staging */}
+            <details className="bg-white rounded-lg shadow-md">
+              <summary className="bg-gradient-to-r from-green-600 to-blue-600 text-white p-4 rounded-t-lg cursor-pointer font-bold">
+                📦 Práctica 2: Domina el Área de Staging
+              </summary>
+              <div className="p-6">
+                <div className="bg-green-50 border border-green-200 rounded p-3 mb-4">
+                  <p className="text-green-800 text-sm">
+                    <strong>🎯 Objetivo:</strong> Entender cómo funciona el área de preparación (staging) haciendo commits selectivos.
+                  </p>
+                </div>
+                <h5 className="font-bold text-gray-800 mb-3">Pasos a seguir:</h5>
+                <ol className="space-y-3 text-gray-700">
+                  <li>
+                    <strong>1. Continúa en tu proyecto y crea más archivos:</strong>
+                    <CodeBlock>{`echo "Página de inicio" {'>'} index.html
+echo "Acerca de nosotros" {'>'} about.html`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>2. Revisa el estado:</strong>
+                    <CodeBlock>{`git status`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">Verás que Git lista ambos archivos como "untracked"</p>
+                  </li>
+                  <li>
+                    <strong>3. Prepara solo un archivo:</strong>
+                    <CodeBlock>{`git add index.html`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>4. Revisa el estado de nuevo:</strong>
+                    <CodeBlock>{`git status`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">¡Observa cómo ahora tienes dos secciones diferentes!</p>
+                  </li>
+                  <li>
+                    <strong>5. Crea un commit solo con lo preparado:</strong>
+                    <CodeBlock>{`git commit -m "feat: agregar página de inicio"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>6. Comprueba el estado final:</strong>
+                    <CodeBlock>{`git status`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">El archivo about.html sigue esperando ser confirmado</p>
+                  </li>
+                  <li>
+                    <strong>7. Termina agregando el segundo archivo:</strong>
+                    <CodeBlock>{`git add about.html
+git commit -m "feat: agregar página about"`}</CodeBlock>
+                  </li>
+                </ol>
+              </div>
+            </details>
+
+            {/* Práctica 3: Trabajando con ramas */}
+            <details className="bg-white rounded-lg shadow-md">
+              <summary className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 rounded-t-lg cursor-pointer font-bold">
+                🌳 Práctica 3: Tu Primera Rama de Desarrollo
+              </summary>
+              <div className="p-6">
+                <div className="bg-purple-50 border border-purple-200 rounded p-3 mb-4">
+                  <p className="text-purple-800 text-sm">
+                    <strong>🎯 Objetivo:</strong> Crear una rama para una nueva funcionalidad y luego fusionarla.
+                  </p>
+                </div>
+                <h5 className="font-bold text-gray-800 mb-3">Pasos a seguir:</h5>
+                <ol className="space-y-3 text-gray-700">
+                  <li>
+                    <strong>1. Ve en qué rama estás:</strong>
+                    <CodeBlock>{`git branch`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">Verás "* main" indicando que estás en la rama principal</p>
+                  </li>
+                  <li>
+                    <strong>2. Crea y cambia a una nueva rama:</strong>
+                    <CodeBlock>{`git checkout -b agregar-estilos`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>3. Crea un archivo CSS:</strong>
+                    <CodeBlock>{`echo "body { font-family: Arial; }" {'>'} styles.css`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>4. Confirma el cambio en esta rama:</strong>
+                    <CodeBlock>{`git add styles.css
+git commit -m "feat: agregar hoja de estilos"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>5. Regresa a la rama principal:</strong>
+                    <CodeBlock>{`git checkout main`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>6. Lista los archivos:</strong>
+                    <CodeBlock>{`ls`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">¡Magia! El archivo styles.css ha desaparecido</p>
+                  </li>
+                  <li>
+                    <strong>7. Fusiona la nueva funcionalidad:</strong>
+                    <CodeBlock>{`git merge agregar-estilos`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>8. Lista los archivos de nuevo:</strong>
+                    <CodeBlock>{`ls`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">🎉 ¡El archivo styles.css ha vuelto!</p>
+                  </li>
+                  <li>
+                    <strong>9. Limpia la rama ya fusionada:</strong>
+                    <CodeBlock>{`git branch -d agregar-estilos`}</CodeBlock>
+                  </li>
+                </ol>
+              </div>
+            </details>
+
+            {/* Práctica 4: Simulando colaboración */}
+            <details className="bg-white rounded-lg shadow-md">
+              <summary className="bg-gradient-to-r from-orange-600 to-red-600 text-white p-4 rounded-t-lg cursor-pointer font-bold">
+                👥 Práctica 4: Simulando Colaboración con GitHub
+              </summary>
+              <div className="p-6">
+                <div className="bg-orange-50 border border-orange-200 rounded p-3 mb-4">
+                  <p className="text-orange-800 text-sm">
+                    <strong>🎯 Objetivo:</strong> Conectar tu proyecto local con GitHub y simular colaboración.
+                  </p>
+                </div>
+                <h5 className="font-bold text-gray-800 mb-3">Pasos a seguir:</h5>
+                <ol className="space-y-3 text-gray-700">
+                  <li>
+                    <strong>1. Crea un repositorio en GitHub:</strong>
+                    <p className="text-sm text-gray-600 mt-1">Ve a github.com, crea cuenta si no tienes, y crea un nuevo repositorio llamado "mi-primer-proyecto"</p>
+                  </li>
+                  <li>
+                    <strong>2. Conecta tu proyecto local:</strong>
+                    <CodeBlock>{`git remote add origin https://github.com/TU-USUARIO/mi-primer-proyecto.git`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>3. Sube tu trabajo a GitHub:</strong>
+                    <CodeBlock>{`git push -u origin main`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>4. Simula un cambio remoto:</strong>
+                    <p className="text-sm text-gray-600 mt-1">En GitHub, edita el README.md directamente en el navegador y haz commit</p>
+                  </li>
+                  <li>
+                    <strong>5. Trae los cambios a tu máquina:</strong>
+                    <CodeBlock>{`git pull origin main`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>6. Ve el historial completo:</strong>
+                    <CodeBlock>{`git log --oneline --graph`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">🎉 ¡Has completado tu primer flujo de colaboración!</p>
+                  </li>
+                </ol>
+              </div>
+            </details>
+          </div>
+
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-6 mt-8">
+            <h4 className="font-bold text-green-900 mb-3 flex items-center">
+              <Play className="w-5 h-5 mr-2" />
+              🏆 ¡Felicidades por completar las prácticas!
+            </h4>
+            <div className="grid md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <h5 className="font-bold text-green-800 mb-2">Has aprendido a:</h5>
+                <ul className="text-green-700 space-y-1">
+                  <li>✅ Crear y configurar repositorios</li>
+                  <li>✅ Usar el área de staging estratégicamente</li>
+                  <li>✅ Trabajar con ramas de forma efectiva</li>
+                  <li>✅ Colaborar usando repositorios remotos</li>
+                </ul>
+              </div>
+              <div>
+                <h5 className="font-bold text-blue-800 mb-2">Próximos pasos recomendados:</h5>
+                <ul className="text-blue-700 space-y-1">
+                  <li>🚀 Practica con proyectos reales</li>
+                  <li>🤝 Contribuye a proyectos open source</li>
+                  <li>📚 Explora comandos avanzados</li>
+                  <li>🔧 Configura aliases para eficiencia</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
     }
   ];
 
@@ -822,13 +1154,17 @@ git stash apply stash@{0}`}</CodeBlock>
 
 const getSectionIcon = (index: number): React.ReactNode => {
   const icons = [
-    <GitBranch className="w-6 h-6" />,
-    <FileText className="w-6 h-6" />,
-    <Terminal className="w-6 h-6" />,
-    <GitCommit className="w-6 h-6" />,
-    <GitMerge className="w-6 h-6" />,
-    <CheckCircle className="w-6 h-6" />,
-    <Award className="w-6 h-6" />
+    <GitBranch className="w-6 h-6" />,        // 1. Introducción
+    <Download className="w-6 h-6" />,         // 2. Instalación
+    <Settings className="w-6 h-6" />,         // 3. Configuración
+    <Folder className="w-6 h-6" />,           // 4. Creando Repositorios
+    <GitCommit className="w-6 h-6" />,        // 5. Flujo de Trabajo
+    <Eye className="w-6 h-6" />,              // 6. .gitignore
+    <GitBranch className="w-6 h-6" />,        // 7. Ramas
+    <Cloud className="w-6 h-6" />,            // 8. Remotos
+    <Terminal className="w-6 h-6" />,         // 9. Terminal
+    <GitMerge className="w-6 h-6" />,         // 10. Avanzados
+    <Play className="w-6 h-6" />              // 11. Prácticas
   ];
   return icons[index % icons.length];
 };

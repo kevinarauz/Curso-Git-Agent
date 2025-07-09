@@ -133,9 +133,6 @@ const HomePage = () => {
               <button className="btn btn-primary text-lg px-8 py-3">
                 Comenzar Ahora
               </button>
-              <button className="btn bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 text-lg px-8 py-3">
-                Ver Demo
-              </button>
             </div>
           </div>
         </div>

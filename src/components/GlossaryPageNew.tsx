@@ -429,7 +429,7 @@ const GlossaryPage: React.FC = () => {
                       </div>
                       
                       {item.examples && item.examples.length > 0 && (
-                        <div className="bg-gray-50 rounded-lg p-4">
+                        <div className="bg-gray-50 rounded-lg p-4 mb-4">
                           <h4 className="font-medium text-gray-900 mb-2">Ejemplos:</h4>
                           <div className="space-y-2">
                             {item.examples.map((example, index) => (
