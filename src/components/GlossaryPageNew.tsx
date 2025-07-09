@@ -1,8 +1,19 @@
-import React, { useState, useMemo } from 'react';
-import { Search, BookMarked, Filter, X, Bot, Zap, GitCompare, AlertTriangle, Copy, Loader } from 'lucide-react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { 
+  Search, 
+  BookMarked, 
+  Filter, 
+  X, 
+  Loader, 
+  GitCompare, 
+  Zap, 
+  Copy, 
+  AlertTriangle, 
+  Bot
+} from 'lucide-react';
 import { glossaryTerms, searchGlossary, getTermsByCategory } from '../data/glossary';
-import { useAI } from '../services/aiService';
 import { useAIContinuation } from '../services/aiContinuationService';
+import { useAI } from '../services/aiService';
 import type { GlossaryTerm } from '../types';
 
 const GlossaryPage: React.FC = () => {
@@ -17,6 +28,10 @@ const GlossaryPage: React.FC = () => {
   const [modalTitle, setModalTitle] = useState('');
   const [modalContent, setModalContent] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isContinuing, setIsContinuing] = useState(false);
+  
+  // Ref para el contenido del modal
+  const modalContentRef = useRef<HTMLDivElement>(null);
   
   // AI Tools states
   const [command1, setCommand1] = useState('git pull');
@@ -27,6 +42,32 @@ const GlossaryPage: React.FC = () => {
   const [errorSolution, setErrorSolution] = useState('');
   const [commitDescription, setCommitDescription] = useState('');
   const [commitMessage, setCommitMessage] = useState('');
+
+  // Effects para manejar scroll del modal
+  useEffect(() => {
+    if (showModal) {
+      // Bloquear scroll de la página principal
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${window.scrollY}px`;
+      document.body.style.width = '100%';
+      
+      // Scroll al inicio del modal
+      if (modalContentRef.current) {
+        modalContentRef.current.scrollTop = 0;
+      }
+    } else {
+      // Restaurar scroll de la página
+      const scrollY = document.body.style.top;
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
+    }
+  }, [showModal]);
 
   const categories = [
     'all',
@@ -77,6 +118,7 @@ const GlossaryPage: React.FC = () => {
     setModalContent('Cargando explicación...');
     setShowModal(true);
     setIsLoading(true);
+    setIsContinuing(false);
 
     try {
       const prompt = `Explica el comando de git "${command}" para un principiante. Detalla qué hace, cuándo se usa comúnmente, y un ejemplo práctico. La respuesta debe estar en español y ser clara y concisa.`;
@@ -86,7 +128,10 @@ const GlossaryPage: React.FC = () => {
         {
           onProgress: (status) => {
             if (status === 'continuing') {
+              setIsContinuing(true);
               setModalContent(prevContent => prevContent + '\n\n[Continuando explicación...]');
+            } else if (status === 'completed') {
+              setIsContinuing(false);
             }
           },
           onPartialResponse: (content) => {
@@ -288,9 +333,15 @@ const GlossaryPage: React.FC = () => {
   };
 
   const renderMarkdown = (text: string) => {
-    return text
+    // Limpiar marcas de continuación antes de renderizar
+    const cleanText = text.replace(/---CONTINUAR---\s*/g, '').trim();
+    
+    return cleanText
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\* (.*?)(?:\n|$)/g, '<ul><li>$1</li></ul>')
+      .replace(/```bash\n([\s\S]*?)\n```/g, '<pre style="background-color: #1a1a1a; color: #00ff00; padding: 12px; border-radius: 8px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; max-width: 100%; margin: 16px 0;"><code>$1</code></pre>')
+      .replace(/```(.*?)\n([\s\S]*?)\n```/g, '<pre style="background-color: #f5f5f5; padding: 12px; border-radius: 8px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; max-width: 100%; margin: 16px 0;"><code>$2</code></pre>')
+      .replace(/`([^`]+)`/g, '<code style="background-color: #f0f0f0; padding: 2px 4px; border-radius: 4px; font-size: 0.9em; word-wrap: break-word;">$1</code>')
       .replace(/\n/g, '<br>');
   };
 
@@ -638,31 +689,74 @@ const GlossaryPage: React.FC = () => {
         )}
       </div>
 
-      {/* Modal */}
+      {/* Modal con scroll interno - MEJORADO */}
       {showModal && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[95vh] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">{modalTitle}</h3>
+        <div 
+          className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 z-50"
+          onClick={closeModal}
+          onWheel={(e) => e.preventDefault()}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col mx-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header fijo */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
+              <h3 className="text-lg font-semibold text-gray-900 truncate pr-4">{modalTitle}</h3>
               <button
                 onClick={closeModal}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 flex-shrink-0 ml-2"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(95vh - 120px)' }}>
-              {isLoading ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader className="w-8 h-8 animate-spin text-blue-600" />
-                  <span className="ml-2 text-gray-600">Generando explicación...</span>
-                </div>
-              ) : (
-                <div 
-                  className="prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{ __html: renderMarkdown(modalContent) }}
-                />
-              )}
+            
+            {/* Contenido con scroll interno */}
+            <div 
+              ref={modalContentRef}
+              className="flex-1 overflow-y-scroll"
+              style={{
+                height: 'calc(90vh - 120px)', // Altura FIJA para forzar scroll
+                scrollbarWidth: 'thin',
+                scrollbarColor: '#cbd5e1 #f1f5f9'
+              }}
+              onWheel={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                {isLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader className="w-8 h-8 animate-spin text-blue-600" />
+                    <span className="ml-2 text-gray-600">Generando explicación...</span>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Contenido principal */}
+                    <div 
+                      className="prose prose-sm max-w-none leading-relaxed"
+                      style={{ 
+                        lineHeight: '1.6',
+                        wordWrap: 'break-word',
+                        overflowWrap: 'break-word',
+                        minHeight: '500px' // Altura mínima para forzar scroll
+                      }}
+                      dangerouslySetInnerHTML={{ __html: renderMarkdown(modalContent) }}
+                    />
+                    
+                    {/* Indicador de continuación */}
+                    {isContinuing && (
+                      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center">
+                        <Loader className="w-4 h-4 animate-spin text-blue-600 mr-2" />
+                        <span className="text-blue-700 text-sm">Continuando explicación automáticamente...</span>
+                      </div>
+                    )}
+                    
+                    {/* Espaciador para garantizar scroll visible */}
+                    <div style={{ height: '200px', opacity: 0 }}>
+                      {/* Espacio invisible para forzar scroll */}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
