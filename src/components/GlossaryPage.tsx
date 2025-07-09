@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, BookMarked, Filter, X, Bot, Zap, GitCompare, AlertTriangle, Copy, Loader } from 'lucide-react';
+import { Search, BookMarked, Filter, X, Loader } from 'lucide-react';
 import { glossaryTerms, searchGlossary, getTermsByCategory } from '../data/glossary';
 import { useAI } from '../services/aiService';
 import type { GlossaryTerm } from '../types';
@@ -15,15 +15,6 @@ const GlossaryPage: React.FC = () => {
   const [modalTitle, setModalTitle] = useState('');
   const [modalContent, setModalContent] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
-  // AI Tools states
-  const [command1, setCommand1] = useState('git pull');
-  const [command2, setCommand2] = useState('git fetch');
-  const [comparisonResult, setComparisonResult] = useState('');
-  const [errorDescription, setErrorDescription] = useState('');
-  const [errorSolution, setErrorSolution] = useState('');
-  const [commitDescription, setCommitDescription] = useState('');
-  const [commitMessage, setCommitMessage] = useState('');
 
   const categories = [
     'all',
@@ -91,79 +82,6 @@ const GlossaryPage: React.FC = () => {
     }
   };
 
-  const compareCommands = async () => {
-    if (!command1 || !command2 || command1 === command2) {
-      alert('Por favor, elige dos comandos diferentes para comparar.');
-      return;
-    }
-
-    setComparisonResult('Analizando las diferencias...');
-    
-    try {
-      const prompt = `Para un principiante en Git, explica la diferencia fundamental entre los comandos "${command1}" y "${command2}". Enfócate en su propósito principal, cuándo es mejor usar cada uno, y los posibles riesgos o resultados. La respuesta debe ser clara, concisa y en español.`;
-      const result = await generateText(prompt, 'command');
-      
-      if (result.success) {
-        setComparisonResult(result.content);
-      } else {
-        setComparisonResult(result.error || 'Error al comparar comandos');
-      }
-    } catch (error) {
-      setComparisonResult('Error de conexión. Verifica tu configuración de IA.');
-    }
-  };
-
-  const solveError = async () => {
-    if (!errorDescription.trim()) {
-      alert('Por favor, describe el error que estás experimentando.');
-      return;
-    }
-
-    setErrorSolution('Analizando el error...');
-    
-    try {
-      const prompt = `Como un experto en Git, he recibido el siguiente mensaje de error: "${errorDescription}". Explícame en español, de forma sencilla, qué significa este error, por qué ocurre comúnmente y dame los pasos claros para solucionarlo.`;
-      const result = await generateText(prompt, 'command');
-      
-      if (result.success) {
-        setErrorSolution(result.content);
-      } else {
-        setErrorSolution(result.error || 'Error al analizar el problema');
-      }
-    } catch (error) {
-      setErrorSolution('Error de conexión. Verifica tu configuración de IA.');
-    }
-  };
-
-  const generateCommit = async () => {
-    if (!commitDescription.trim()) {
-      alert('Por favor, describe los cambios que realizaste.');
-      return;
-    }
-
-    try {
-      const prompt = `Basado en la siguiente descripción de cambios: "${commitDescription}", genera un mensaje de commit semántico en una sola línea, en español, siguiendo el estándar de Conventional Commits (ej. feat:, fix:, docs:). Solo devuelve el mensaje del commit, sin explicaciones.`;
-      const result = await generateText(prompt, 'commit');
-      
-      if (result.success) {
-        setCommitMessage(result.content);
-      } else {
-        setCommitMessage(result.error || 'Error al generar mensaje');
-      }
-    } catch (error) {
-      setCommitMessage('Error de conexión. Verifica tu configuración de IA.');
-    }
-  };
-
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      // Podrías agregar una notificación aquí
-    } catch (error) {
-      console.error('Error al copiar:', error);
-    }
-  };
-
   const closeModal = () => {
     setShowModal(false);
     setModalTitle('');
@@ -176,11 +94,6 @@ const GlossaryPage: React.FC = () => {
       .replace(/\* (.*?)(?:\n|$)/g, '<ul><li>$1</li></ul>')
       .replace(/\n/g, '<br>');
   };
-
-  // Obtener lista de comandos para los selectores
-  const gitCommands = glossaryTerms
-    .filter(term => term.term.startsWith('git '))
-    .sort((a, b) => a.term.localeCompare(b.term));
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -256,131 +169,7 @@ const GlossaryPage: React.FC = () => {
         </div>
       </div>
 
-      {/* AI Tools Section */}
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 border-b">
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">🤖 Herramientas IA para Git</h2>
-          
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Comparar Comandos */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <GitCompare className="w-5 h-5 mr-2 text-blue-600" />
-                Comparar Comandos
-              </h3>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <select
-                    value={command1}
-                    onChange={(e) => setCommand1(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  >
-                    {gitCommands.map(cmd => (
-                      <option key={cmd.term} value={cmd.term}>{cmd.term}</option>
-                    ))}
-                  </select>
-                  <select
-                    value={command2}
-                    onChange={(e) => setCommand2(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  >
-                    {gitCommands.map(cmd => (
-                      <option key={cmd.term} value={cmd.term}>{cmd.term}</option>
-                    ))}
-                  </select>
-                </div>
-                <button
-                  onClick={compareCommands}
-                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
-                >
-                  <Zap className="w-4 h-4 mr-2" />
-                  Comparar con IA
-                </button>
-                {comparisonResult && (
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
-                    <div 
-                      className="text-sm text-gray-700"
-                      dangerouslySetInnerHTML={{ __html: renderMarkdown(comparisonResult) }}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
 
-            {/* Solucionador de Errores */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <AlertTriangle className="w-5 h-5 mr-2 text-red-600" />
-                Solucionar Errores
-              </h3>
-              <div className="space-y-4">
-                <textarea
-                  value={errorDescription}
-                  onChange={(e) => setErrorDescription(e.target.value)}
-                  placeholder="Pega aquí el mensaje de error de Git..."
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none text-sm"
-                />
-                <button
-                  onClick={solveError}
-                  className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center"
-                >
-                  <AlertTriangle className="w-4 h-4 mr-2" />
-                  Analizar Error
-                </button>
-                {errorSolution && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
-                    <div 
-                      className="text-sm text-gray-700"
-                      dangerouslySetInnerHTML={{ __html: renderMarkdown(errorSolution) }}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Generador de Commits */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <Bot className="w-5 h-5 mr-2 text-green-600" />
-                Generar Commits
-              </h3>
-              <div className="space-y-4">
-                <textarea
-                  value={commitDescription}
-                  onChange={(e) => setCommitDescription(e.target.value)}
-                  placeholder="Describe los cambios que hiciste..."
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none text-sm"
-                />
-                <button
-                  onClick={generateCommit}
-                  className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center"
-                >
-                  <Bot className="w-4 h-4 mr-2" />
-                  Generar Commit
-                </button>
-                {commitMessage && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-green-800">Mensaje generado:</span>
-                      <button
-                        onClick={() => copyToClipboard(commitMessage)}
-                        className="text-green-600 hover:text-green-700"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <code className="block bg-gray-900 text-green-400 p-2 rounded text-sm">
-                      {commitMessage}
-                    </code>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Content */}
       <div className="max-w-6xl mx-auto px-4 py-8">

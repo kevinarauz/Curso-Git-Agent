@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Bot, Loader, Copy, RefreshCw, Settings, AlertCircle, CheckCircle } from 'lucide-react';
+import { Bot, Loader, Copy, RefreshCw, Settings, AlertCircle, GitCompare, AlertTriangle } from 'lucide-react';
 import { useAI } from '../services/aiService';
+import { glossaryTerms } from '../data/glossary';
 
 interface AIAssistantProps {
   onClose?: () => void;
@@ -18,6 +19,19 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
   const [commandResult, setCommandResult] = useState('');
   const [commandLoading, setCommandLoading] = useState(false);
   const [commandError, setCommandError] = useState('');
+
+  // Comparador de comandos
+  const [command1, setCommand1] = useState('git pull');
+  const [command2, setCommand2] = useState('git fetch');
+  const [comparisonResult, setComparisonResult] = useState('');
+  const [comparisonLoading, setComparisonLoading] = useState(false);
+  const [comparisonError, setComparisonError] = useState('');
+
+  // Solucionador de errores
+  const [errorDescription, setErrorDescription] = useState('');
+  const [errorSolution, setErrorSolution] = useState('');
+  const [errorLoading, setErrorLoading] = useState(false);
+  const [errorError, setErrorError] = useState('');
 
   const [showConfig, setShowConfig] = useState(false);
   const [tempApiKey, setTempApiKey] = useState('');
@@ -73,6 +87,58 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
     }
   };
 
+  const compareCommands = async () => {
+    if (!command1 || !command2 || command1 === command2) {
+      setComparisonError('Por favor, elige dos comandos diferentes para comparar.');
+      return;
+    }
+
+    setComparisonError('');
+    setComparisonLoading(true);
+    setComparisonResult('');
+
+    try {
+      const prompt = `Para un principiante en Git, explica la diferencia fundamental entre los comandos "${command1}" y "${command2}". Enfócate en su propósito principal, cuándo es mejor usar cada uno, y los posibles riesgos o resultados. La respuesta debe ser clara, concisa y en español.`;
+      const result = await generateText(prompt, 'command');
+      
+      if (result.success) {
+        setComparisonResult(result.content);
+      } else {
+        setComparisonError(result.error || 'Error al comparar comandos');
+      }
+    } catch (error) {
+      setComparisonError('Error de conexión. Verifica tu configuración de IA.');
+    } finally {
+      setComparisonLoading(false);
+    }
+  };
+
+  const solveError = async () => {
+    if (!errorDescription.trim()) {
+      setErrorError('Por favor, describe el error que estás experimentando.');
+      return;
+    }
+
+    setErrorError('');
+    setErrorLoading(true);
+    setErrorSolution('');
+
+    try {
+      const prompt = `Como un experto en Git, he recibido el siguiente mensaje de error: "${errorDescription}". Explícame en español, de forma sencilla, qué significa este error, por qué ocurre comúnmente y dame los pasos claros para solucionarlo.`;
+      const result = await generateText(prompt, 'command');
+      
+      if (result.success) {
+        setErrorSolution(result.content);
+      } else {
+        setErrorError(result.error || 'Error al analizar el problema');
+      }
+    } catch (error) {
+      setErrorError('Error de conexión. Verifica tu configuración de IA.');
+    } finally {
+      setErrorLoading(false);
+    }
+  };
+
   const handleSaveConfig = () => {
     // Para Gemini, si no hay API key temporal, mantener la actual
     if (currentProvider === 'gemini' && !tempApiKey.trim()) {
@@ -110,6 +176,11 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
       .replace(/\n/g, '<br>');
   };
 
+  // Lista de comandos Git para los selectores
+  const gitCommands = glossaryTerms
+    .filter(term => term.term.startsWith('git '))
+    .sort((a, b) => a.term.localeCompare(b.term));
+
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="mb-8 text-center">
@@ -127,7 +198,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
           </button>
         </div>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          ¿Atascado? Usa el poder de la IA para generar mensajes de commit o encontrar el comando que necesitas.
+          ¿Atascado? Usa el poder de la IA para generar commits, encontrar comandos, comparar opciones y solucionar errores de Git.
         </p>
       </div>
 
@@ -291,6 +362,162 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
             )}
           </div>
         </div>
+
+        {/* Comparador de Comandos */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+            <GitCompare className="w-5 h-5 mr-2 text-purple-600" />
+            Comparar Comandos
+          </h2>
+          <p className="text-gray-600 mb-6">
+            ¿Confundido entre dos comandos similares? Compáralos para entender sus diferencias y cuándo usar cada uno.
+          </p>
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Primer comando:
+                </label>
+                <select
+                  value={command1}
+                  onChange={(e) => setCommand1(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                >
+                  {gitCommands.map(cmd => (
+                    <option key={cmd.term} value={cmd.term}>{cmd.term}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Segundo comando:
+                </label>
+                <select
+                  value={command2}
+                  onChange={(e) => setCommand2(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                >
+                  {gitCommands.map(cmd => (
+                    <option key={cmd.term} value={cmd.term}>{cmd.term}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {comparisonError && (
+              <div className="flex items-center space-x-2 text-sm text-red-600">
+                <AlertCircle className="w-4 h-4" />
+                <span>{comparisonError}</span>
+              </div>
+            )}
+
+            <button
+              onClick={compareCommands}
+              disabled={comparisonLoading}
+              className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            >
+              {comparisonLoading ? (
+                <>
+                  <Loader className="w-4 h-4 animate-spin" />
+                  <span>Comparando...</span>
+                </>
+              ) : (
+                <>
+                  <GitCompare className="w-4 h-4" />
+                  <span>Comparar Comandos</span>
+                </>
+              )}
+            </button>
+
+            {comparisonResult && (
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-medium text-gray-900">Comparación:</h4>
+                  <button
+                    onClick={() => copyToClipboard(comparisonResult.replace(/<[^>]*>/g, ''))}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                </div>
+                <div 
+                  className="prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: renderMarkdown(comparisonResult) }}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Solucionador de Errores */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+            <AlertTriangle className="w-5 h-5 mr-2 text-red-600" />
+            Solucionador de Errores
+          </h2>
+          <p className="text-gray-600 mb-6">
+            ¿Git te muestra un error que no entiendes? Pega el mensaje de error y la IA te explicará qué significa y cómo solucionarlo.
+          </p>
+
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="error-description" className="block text-sm font-medium text-gray-700 mb-2">
+                Mensaje de error:
+              </label>
+              <textarea
+                id="error-description"
+                value={errorDescription}
+                onChange={(e) => setErrorDescription(e.target.value)}
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+                placeholder="Ej: fatal: not a git repository (or any of the parent directories): .git"
+              />
+              {errorError && (
+                <div className="flex items-center space-x-2 text-sm text-red-600 mt-2">
+                  <AlertCircle className="w-4 h-4" />
+                  <span>{errorError}</span>
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={solveError}
+              disabled={errorLoading}
+              className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            >
+              {errorLoading ? (
+                <>
+                  <Loader className="w-4 h-4 animate-spin" />
+                  <span>Analizando...</span>
+                </>
+              ) : (
+                <>
+                  <AlertTriangle className="w-4 h-4" />
+                  <span>Analizar Error</span>
+                </>
+              )}
+            </button>
+
+            {errorSolution && (
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-medium text-gray-900">Solución:</h4>
+                  <button
+                    onClick={() => copyToClipboard(errorSolution.replace(/<[^>]*>/g, ''))}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                </div>
+                <div 
+                  className="prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: renderMarkdown(errorSolution) }}
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Panel de Configuración */}
@@ -377,9 +604,10 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
       <div className="mt-8 p-4 bg-blue-50 rounded-lg">
         <h3 className="font-medium text-blue-900 mb-2">💡 Consejos para usar el asistente:</h3>
         <ul className="text-sm text-blue-800 space-y-1">
-          <li>• Sé específico en tus descripciones para obtener mejores resultados</li>
-          <li>• Para commits, incluye qué tipo de cambio hiciste (nueva función, corrección, etc.)</li>
-          <li>• Para comandos, describe exactamente lo que quieres lograr</li>
+          <li>• <strong>Commits:</strong> Sé específico en tus descripciones para obtener mejores mensajes</li>
+          <li>• <strong>Comandos:</strong> Describe exactamente lo que quieres lograr</li>
+          <li>• <strong>Comparaciones:</strong> Usa esta herramienta cuando no sepas cuál comando es mejor</li>
+          <li>• <strong>Errores:</strong> Copia el mensaje de error completo para una mejor diagnosis</li>
           <li>• Siempre revisa las sugerencias antes de usarlas en tu proyecto</li>
         </ul>
       </div>
