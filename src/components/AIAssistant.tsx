@@ -178,8 +178,62 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
 
   // Lista de comandos Git para los selectores
   const gitCommands = glossaryTerms
-    .filter(term => term.term.startsWith('git '))
+    .filter(term => term.term.toLowerCase().includes('git ') || term.examples.some(ex => ex.startsWith('git ')))
+    .map(term => {
+      // Si el término no empieza con 'git ', usar el primer ejemplo que sí lo haga
+      if (term.term.toLowerCase().includes('git ')) {
+        return { term: term.term, label: term.term };
+      } else {
+        const gitExample = term.examples.find(ex => ex.startsWith('git '));
+        return { term: gitExample || term.term, label: gitExample || term.term };
+      }
+    })
+    .filter((item, index, array) => array.findIndex(i => i.term === item.term) === index) // Eliminar duplicados
     .sort((a, b) => a.term.localeCompare(b.term));
+
+  // Agregar algunos comandos comunes que podrían no estar en el glosario
+  const commonCommands = [
+    { term: 'git add', label: 'git add' },
+    { term: 'git commit', label: 'git commit' },
+    { term: 'git push', label: 'git push' },
+    { term: 'git pull', label: 'git pull' },
+    { term: 'git fetch', label: 'git fetch' },
+    { term: 'git merge', label: 'git merge' },
+    { term: 'git branch', label: 'git branch' },
+    { term: 'git checkout', label: 'git checkout' },
+    { term: 'git status', label: 'git status' },
+    { term: 'git log', label: 'git log' },
+    { term: 'git reset', label: 'git reset' },
+    { term: 'git rebase', label: 'git rebase' },
+    { term: 'git stash', label: 'git stash' },
+    { term: 'git clone', label: 'git clone' },
+    { term: 'git init', label: 'git init' },
+    { term: 'git diff', label: 'git diff' },
+    { term: 'git cherry-pick', label: 'git cherry-pick' },
+    { term: 'git tag', label: 'git tag' },
+    { term: 'git remote', label: 'git remote' },
+    { term: 'git config', label: 'git config' },
+  ];
+
+  // Combinar y deduplicar
+  const allCommands = [...gitCommands, ...commonCommands]
+    .filter((item, index, array) => array.findIndex(i => i.term === item.term) === index)
+    .sort((a, b) => a.term.localeCompare(b.term));
+
+  // Asegurar que los comandos iniciales estén en la lista
+  React.useEffect(() => {
+    if (allCommands.length > 0) {
+      const cmd1Exists = allCommands.some(cmd => cmd.term === command1);
+      const cmd2Exists = allCommands.some(cmd => cmd.term === command2);
+      
+      if (!cmd1Exists && allCommands.length > 0) {
+        setCommand1(allCommands[0].term);
+      }
+      if (!cmd2Exists && allCommands.length > 1) {
+        setCommand2(allCommands[1].term);
+      }
+    }
+  }, [allCommands, command1, command2]);
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -375,78 +429,86 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
           </p>
 
           <div className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Primer comando:
-                </label>
-                <select
-                  value={command1}
-                  onChange={(e) => setCommand1(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
-                >
-                  {gitCommands.map(cmd => (
-                    <option key={cmd.term} value={cmd.term}>{cmd.term}</option>
-                  ))}
-                </select>
+            {allCommands.length === 0 ? (
+              <div className="text-center py-4 text-gray-500">
+                <p>No hay comandos disponibles para comparar.</p>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Segundo comando:
-                </label>
-                <select
-                  value={command2}
-                  onChange={(e) => setCommand2(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
-                >
-                  {gitCommands.map(cmd => (
-                    <option key={cmd.term} value={cmd.term}>{cmd.term}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {comparisonError && (
-              <div className="flex items-center space-x-2 text-sm text-red-600">
-                <AlertCircle className="w-4 h-4" />
-                <span>{comparisonError}</span>
-              </div>
-            )}
-
-            <button
-              onClick={compareCommands}
-              disabled={comparisonLoading}
-              className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-            >
-              {comparisonLoading ? (
-                <>
-                  <Loader className="w-4 h-4 animate-spin" />
-                  <span>Comparando...</span>
-                </>
-              ) : (
-                <>
-                  <GitCompare className="w-4 h-4" />
-                  <span>Comparar Comandos</span>
-                </>
-              )}
-            </button>
-
-            {comparisonResult && (
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-medium text-gray-900">Comparación:</h4>
-                  <button
-                    onClick={() => copyToClipboard(comparisonResult.replace(/<[^>]*>/g, ''))}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    <Copy className="w-4 h-4" />
-                  </button>
+            ) : (
+              <>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Primer comando:
+                    </label>
+                    <select
+                      value={command1}
+                      onChange={(e) => setCommand1(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                    >
+                      {allCommands.map(cmd => (
+                        <option key={`cmd1-${cmd.term}`} value={cmd.term}>{cmd.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Segundo comando:
+                    </label>
+                    <select
+                      value={command2}
+                      onChange={(e) => setCommand2(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                    >
+                      {allCommands.map(cmd => (
+                        <option key={`cmd2-${cmd.term}`} value={cmd.term}>{cmd.label}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-                <div 
-                  className="prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{ __html: renderMarkdown(comparisonResult) }}
-                />
-              </div>
+
+                {comparisonError && (
+                  <div className="flex items-center space-x-2 text-sm text-red-600">
+                    <AlertCircle className="w-4 h-4" />
+                    <span>{comparisonError}</span>
+                  </div>
+                )}
+
+                <button
+                  onClick={compareCommands}
+                  disabled={comparisonLoading || allCommands.length === 0}
+                  className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                >
+                  {comparisonLoading ? (
+                    <>
+                      <Loader className="w-4 h-4 animate-spin" />
+                      <span>Comparando...</span>
+                    </>
+                  ) : (
+                    <>
+                      <GitCompare className="w-4 h-4" />
+                      <span>Comparar Comandos</span>
+                    </>
+                  )}
+                </button>
+
+                {comparisonResult && (
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium text-gray-900">Comparación:</h4>
+                      <button
+                        onClick={() => copyToClipboard(comparisonResult.replace(/<[^>]*>/g, ''))}
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div 
+                      className="prose prose-sm max-w-none"
+                      dangerouslySetInnerHTML={{ __html: renderMarkdown(comparisonResult) }}
+                    />
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
