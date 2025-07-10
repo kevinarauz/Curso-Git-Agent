@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { GameProvider } from './contexts/GameContext';
 import GitManualPage from './components/GitManualPage';
 import AIAssistant from './components/AIAssistant';
-import GlossaryPageNew from './components/GlossaryPage';
+import GlossaryPage from './components/GlossaryPage';
 import AchievementsPage from './components/AchievementsPage';
 import ExercisesPage from './components/ExercisesPage';
 import ProfilePage from './components/ProfilePage';
@@ -280,7 +280,7 @@ function App() {
       case 'exercises':
         return <ExercisesPage />;
       case 'glossary':
-        return <GlossaryPageNew />;
+        return <GlossaryPage />;
       case 'achievements':
         return <AchievementsPage />;
       case 'profile':
