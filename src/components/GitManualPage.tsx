@@ -81,7 +81,8 @@ const GitManualPage: React.FC = () => {
       'branch-wizard': 'Mago de las Ramas',
       'advanced-sorcerer': 'Hechicero Avanzado',
       'hands-on-hero': 'Héroe Práctico',
-      'conflict-resolver': 'Resolvedor de Conflictos'
+      'conflict-resolver': 'Resolvedor de Conflictos',
+      'version-master': 'Maestro del Versionado'
     };
     return badges[badge] || 'Badge Especial';
   };
@@ -96,7 +97,8 @@ const GitManualPage: React.FC = () => {
       'branch-wizard': '¡Creaste y fusionaste tu primera rama!',
       'advanced-sorcerer': '¡Has explorado los conceptos avanzados!',
       'hands-on-hero': '¡Has completado todas las prácticas!',
-      'conflict-resolver': '¡Dominas la resolución de conflictos!'
+      'conflict-resolver': '¡Dominas la resolución de conflictos!',
+      'version-master': '¡Sabes crear releases y versiones!'
     };
     return descriptions[badge] || 'Has completado una sección especial';
   };
@@ -858,8 +860,8 @@ git stash apply stash@{0}`}</CodeBlock>
     {
       id: 'practicas',
       title: '11. ¡Manos a la Obra! Prácticas Guiadas',
-      xp: 25,
-      badge: 'conflict-resolver',
+      xp: 50,
+      badge: 'version-master',
       content: (
         <div className="space-y-6">
           <p className="text-lg text-gray-700 leading-relaxed">
@@ -1183,6 +1185,12 @@ cat Test.txt`}</CodeBlock>
                   <li>✅ Usar el área de staging estratégicamente</li>
                   <li>✅ Trabajar con ramas de forma efectiva</li>
                   <li>✅ Colaborar usando repositorios remotos</li>
+                  <li>✅ Resolver conflictos de merge</li>
+                  <li>✅ Usar Git Stash para guardado temporal</li>
+                  <li>✅ Recuperarse de errores con reset/revert</li>
+                  <li>✅ Crear Pull Requests profesionales</li>
+                  <li>✅ Aplicar estrategias de merge avanzadas</li>
+                  <li>✅ Gestionar versiones y releases con tags</li>
                 </ul>
               </div>
               <div>
@@ -1336,6 +1344,74 @@ cat Test.txt`}</CodeBlock>
           </div>
         </div>
       )
+    },
+    {
+      id: 'tags',
+      title: '10. Git Tags - Versionado y Releases',
+      xp: 20,
+      badge: 'advanced-sorcerer',
+      content: (
+        <div className="space-y-6">
+          <p className="text-lg text-gray-700 leading-relaxed">
+            Los tags en Git son utilizados para marcar puntos específicos en la historia de tu proyecto, 
+            generalmente para señalar versiones (releases). Aprenderás a crear y gestionar tags eficientemente.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h4 className="font-bold text-gray-800 mb-4">¿Qué son los Git Tags?</h4>
+              <p className="text-gray-700 mb-4">
+                Los tags son referencias que apuntan a commits específicos. A diferencia de las ramas, los tags 
+                no cambian y son ideales para marcar versiones estables de tu proyecto.
+              </p>
+              <h4 className="font-bold text-gray-800 mb-3">Tipos de Tags:</h4>
+              <ul className="list-disc list-inside space-y-2 text-gray-700">
+                <li>
+                  <strong>Tags Ligeros:</strong> Son como un marcador, apuntan a un commit específico.
+                  <CodeBlock>git tag v1.0.0</CodeBlock>
+                </li>
+                <li>
+                  <strong>Tags Anotados:</strong> Son objetos completos en Git, incluyen información del autor, fecha y mensaje.
+                  <CodeBlock>git tag -a v1.0.0 -m "Mensaje del tag"</CodeBlock>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h4 className="font-bold text-gray-800 mb-4">Comandos Básicos de Git Tags</h4>
+              <div className="space-y-3">
+                <div>
+                  <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">git tag</code>
+                  <p className="text-gray-600 text-sm mt-1">Listar todos los tags</p>
+                </div>
+                <div>
+                  <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">git tag -a v1.0.0 -m "Mensaje"</code>
+                  <p className="text-gray-600 text-sm mt-1">Crear un tag anotado</p>
+                </div>
+                <div>
+                  <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">git tag -d v1.0.0</code>
+                  <p className="text-gray-600 text-sm mt-1">Eliminar un tag</p>
+                </div>
+                <div>
+                  <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">git push origin --tags</code>
+                  <p className="text-gray-600 text-sm mt-1">Subir todos los tags al remoto</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <h4 className="font-bold text-yellow-800 mb-2">🎯 Buenas Prácticas con Git Tags</h4>
+            <ul className="text-yellow-700 space-y-1">
+              <li>• Usa tags anotados para versiones oficiales</li>
+              <li>• Sigue un esquema de versionado semántico (SemVer)</li>
+              <li>• Incluye un changelog en el mensaje del tag</li>
+              <li>• Crea releases en GitHub/GitLab basados en tags</li>
+              <li>• Usa prefijo 'v' para versiones (v1.0.0)</li>
+            </ul>
+          </div>
+        </div>
+      )
     }
   ];
 
@@ -1398,17 +1474,17 @@ cat Test.txt`}</CodeBlock>
 const getSectionIcon = (index: number): React.ReactNode => {
   const icons = [
     <GitBranch className="w-6 h-6" />,        // 1. Introducción
-    <Download className="w-6 h-6" />,         // // 2. Instalación
-    <Settings className="w-6 h-6" />,         // 3. Configuración
-    <Folder className="w-6 h-6" />,           // 4. Creando Repositorios
-    <GitCommit className="w-6 h-6" />,        // 5. Flujo de Trabajo
-    <Eye className="w-6 h-6" />,              // 6. .gitignore
-    <GitBranch className="w-6 h-6" />,        // 7. Ramas
-    <Cloud className="w-6 h-6" />,            // 8. Remotos
-    <Terminal className="w-6 h-6" />,         // 9. Terminal
-    <GitMerge className="w-6 h-6" />,         // 10. Avanzados
-    <Play className="w-6 h-6" />,             // 11. Prácticas
-    <Settings className="w-6 h-6" />          // 12. Masterclass
+    <Download className="w-6 h-6" />,         // 2. Conceptos
+    <Settings className="w-6 h-6" />,         // 3. Instalación
+    <Folder className="w-6 h-6" />,           // 4. Configuración
+    <GitCommit className="w-6 h-6" />,        // 5. Repositorios
+    <Eye className="w-6 h-6" />,              // 6. Flujo de Trabajo
+    <GitBranch className="w-6 h-6" />,        // 7. .gitignore
+    <Cloud className="w-6 h-6" />,            // 8. Ramas
+    <Terminal className="w-6 h-6" />,         // 9. Remotos
+    <GitMerge className="w-6 h-6" />,         // 10. Terminal
+    <Play className="w-6 h-6" />,             // 11. Avanzados
+    <Settings className="w-6 h-6" />          // 12. Prácticas
   ];
   return icons[index % icons.length];
 };
