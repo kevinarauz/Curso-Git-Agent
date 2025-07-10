@@ -1170,6 +1170,513 @@ cat Test.txt`}</CodeBlock>
                 </div>
               </div>
             </details>
+
+            {/* Práctica 6: Git Stash - Guardado Temporal */}
+            <details className="bg-white rounded-lg shadow-md">
+              <summary className="bg-gradient-to-r from-yellow-600 to-orange-600 text-white p-4 rounded-t-lg cursor-pointer font-bold">
+                💾 Práctica 6: Git Stash - Guardado Temporal
+              </summary>
+              <div className="p-6">
+                <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-4">
+                  <p className="text-yellow-800 text-sm">
+                    <strong>🎯 Objetivo:</strong> Aprender a guardar cambios temporalmente sin hacer commit cuando necesitas cambiar de rama rápidamente.
+                  </p>
+                </div>
+                <h5 className="font-bold text-gray-800 mb-3">Pasos a seguir:</h5>
+                <ol className="space-y-3 text-gray-700">
+                  <li>
+                    <strong>1. Simula trabajo en progreso:</strong>
+                    <CodeBlock>{`echo "Trabajo en progreso..." >> README.md
+echo "console.log('codigo temporal');" > temp.js`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>2. Verifica el estado:</strong>
+                    <CodeBlock>{`git status`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">Verás archivos modificados pero no listos para commit</p>
+                  </li>
+                  <li>
+                    <strong>3. Necesitas cambiar de rama urgentemente - usa stash:</strong>
+                    <CodeBlock>{`git stash -m "Trabajo temporal en README y temp.js"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>4. Verifica que tu working directory esté limpio:</strong>
+                    <CodeBlock>{`git status`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">🎉 Tu directorio está limpio, puedes cambiar de rama</p>
+                  </li>
+                  <li>
+                    <strong>5. Ve tus stashes guardados:</strong>
+                    <CodeBlock>{`git stash list`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>6. Recupera tu trabajo cuando estés listo:</strong>
+                    <CodeBlock>{`git stash pop`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">Esto restaura los cambios y elimina el stash</p>
+                  </li>
+                  <li>
+                    <strong>7. Experimenta con múltiples stashes:</strong>
+                    <CodeBlock>{`echo "Otro cambio" > otro.txt
+git stash -m "Segundo stash"
+git stash list`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>8. Aplica un stash específico:</strong>
+                    <CodeBlock>{`git stash apply stash@{0}`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">Aplica sin eliminar el stash</p>
+                  </li>
+                  <li>
+                    <strong>9. Limpia los stashes:</strong>
+                    <CodeBlock>{`git stash clear`}</CodeBlock>
+                  </li>
+                </ol>
+                <div className="mt-6 bg-blue-50 border border-blue-200 rounded p-3">
+                  <p className="text-blue-800 text-sm font-semibold mb-2">💡 Casos de uso del día a día:</p>
+                  <ul className="text-blue-700 text-sm space-y-1">
+                    <li>• Cambiar de rama rápidamente para revisar algo</li>
+                    <li>• Hacer un pull cuando tienes cambios locales</li>
+                    <li>• Pausar tu trabajo para atender una emergencia</li>
+                    <li>• Experimentar con código sin perder tu progreso</li>
+                  </ul>
+                </div>
+              </div>
+            </details>
+
+            {/* Práctica 7: Git Reset y Revert - Recuperación de Errores */}
+            <details className="bg-white rounded-lg shadow-md">
+              <summary className="bg-gradient-to-r from-red-600 to-pink-600 text-white p-4 rounded-t-lg cursor-pointer font-bold">
+                🔄 Práctica 7: Git Reset y Revert - Recuperación de Errores
+              </summary>
+              <div className="p-6">
+                <div className="bg-red-50 border border-red-200 rounded p-3 mb-4">
+                  <p className="text-red-800 text-sm">
+                    <strong>🎯 Objetivo:</strong> Dominar las técnicas para deshacer cambios y recuperarse de errores comunes.
+                  </p>
+                </div>
+                <h5 className="font-bold text-gray-800 mb-3">Pasos a seguir:</h5>
+                <ol className="space-y-3 text-gray-700">
+                  <li>
+                    <strong>1. Crea algunos commits para practicar:</strong>
+                    <CodeBlock>{`echo "Version 1" > version.txt
+git add . && git commit -m "Version 1"
+echo "Version 2" > version.txt
+git add . && git commit -m "Version 2"
+echo "Version 3 (problema)" > version.txt
+git add . && git commit -m "Version 3 con bug"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>2. Ve el historial:</strong>
+                    <CodeBlock>{`git log --oneline`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>3. Escenario 1: Deshacer el último commit (pero mantener cambios):</strong>
+                    <CodeBlock>{`git reset HEAD~1`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">Los cambios vuelven al working directory</p>
+                  </li>
+                  <li>
+                    <strong>4. Verifica el estado:</strong>
+                    <CodeBlock>{`git status
+cat version.txt`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>5. Vuelve a hacer commit del archivo corregido:</strong>
+                    <CodeBlock>{`echo "Version 3 corregida" > version.txt
+git add . && git commit -m "Version 3 corregida"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>6. Escenario 2: Deshacer completamente (¡PELIGROSO!):</strong>
+                    <CodeBlock>{`git reset --hard HEAD~1`}</CodeBlock>
+                    <p className="text-sm text-red-600 mt-2">⚠️ Esto elimina completamente el commit y los cambios</p>
+                  </li>
+                  <li>
+                    <strong>7. Escenario 3: Revert (crear un commit que deshace otro):</strong>
+                    <CodeBlock>{`# Primero crea un commit problemático
+echo "Código con bug" > bug.js
+git add . && git commit -m "Commit con bug"
+
+# Ahora usa revert (más seguro)
+git revert HEAD`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>8. Rescate de emergencia con reflog:</strong>
+                    <CodeBlock>{`git reflog
+# Busca el commit que perdiste y cópialo
+git reset --hard <commit-hash>`}</CodeBlock>
+                  </li>
+                </ol>
+                <div className="mt-6 grid md:grid-cols-2 gap-4">
+                  <div className="bg-red-50 border border-red-200 rounded p-3">
+                    <p className="text-red-800 text-sm font-semibold mb-2">⚠️ Reset vs Revert:</p>
+                    <ul className="text-red-700 text-sm space-y-1">
+                      <li>• <strong>Reset:</strong> Reescribe historia (peligroso si ya compartiste)</li>
+                      <li>• <strong>Revert:</strong> Crea nuevo commit que deshace (más seguro)</li>
+                    </ul>
+                  </div>
+                  <div className="bg-blue-50 border border-blue-200 rounded p-3">
+                    <p className="text-blue-800 text-sm font-semibold mb-2">💡 Tipos de Reset:</p>
+                    <ul className="text-blue-700 text-sm space-y-1">
+                      <li>• <strong>--soft:</strong> Solo mueve HEAD</li>
+                      <li>• <strong>--mixed:</strong> Resetea staging (por defecto)</li>
+                      <li>• <strong>--hard:</strong> Resetea todo (peligroso)</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            {/* Práctica 8: Pull Requests - Trabajo en Equipo */}
+            <details className="bg-white rounded-lg shadow-md">
+              <summary className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4 rounded-t-lg cursor-pointer font-bold">
+                🤝 Práctica 8: Pull Requests - Trabajo en Equipo
+              </summary>
+              <div className="p-6">
+                <div className="bg-purple-50 border border-purple-200 rounded p-3 mb-4">
+                  <p className="text-purple-800 text-sm">
+                    <strong>🎯 Objetivo:</strong> Aprender el flujo completo de Pull Requests para colaborar efectivamente en equipo.
+                  </p>
+                </div>
+                <h5 className="font-bold text-gray-800 mb-3">Pasos a seguir:</h5>
+                <ol className="space-y-3 text-gray-700">
+                  <li>
+                    <strong>1. Crea una rama para tu feature:</strong>
+                    <CodeBlock>{`git checkout -b feature/nueva-funcionalidad`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>2. Desarrolla tu funcionalidad:</strong>
+                    <CodeBlock>{`echo "function nuevaFuncionalidad() {" > nueva-feature.js
+echo "  console.log('Nueva funcionalidad implementada');" >> nueva-feature.js
+echo "}" >> nueva-feature.js
+git add . && git commit -m "feat: añadir nueva funcionalidad"
+
+# Haz algunos commits más para simular desarrollo
+echo "// Mejoras en la función" >> nueva-feature.js
+git add . && git commit -m "feat: mejorar nueva funcionalidad"
+echo "// Tests añadidos" >> nueva-feature.js
+git add . && git commit -m "test: añadir tests para nueva funcionalidad"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>3. Sube tu rama al remoto:</strong>
+                    <CodeBlock>{`git push -u origin feature/nueva-funcionalidad`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>4. Crea un Pull Request en GitHub:</strong>
+                    <div className="bg-gray-100 p-3 rounded mt-2">
+                      <p className="text-sm text-gray-700">
+                        Ve a GitHub → Tu repositorio → "Compare & pull request" → Completa la información:
+                      </p>
+                      <ul className="text-sm text-gray-600 mt-2 space-y-1">
+                        <li>• <strong>Título:</strong> Descriptivo y claro</li>
+                        <li>• <strong>Descripción:</strong> Qué hace, por qué, cómo probarlo</li>
+                        <li>• <strong>Asignados:</strong> Quien debe revisar</li>
+                        <li>• <strong>Labels:</strong> Para categorizar</li>
+                      </ul>
+                    </div>
+                  </li>
+                  <li>
+                    <strong>5. Simula feedback del equipo:</strong>
+                    <CodeBlock>{`# Responde a comentarios haciendo cambios
+echo "// Cambios solicitados en code review" >> nueva-feature.js
+git add . && git commit -m "fix: aplicar feedback del code review"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>6. Sube los cambios:</strong>
+                    <CodeBlock>{`git push origin feature/nueva-funcionalidad`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">El PR se actualiza automáticamente</p>
+                  </li>
+                  <li>
+                    <strong>7. Aprende a usar el CLI de GitHub (opcional):</strong>
+                    <CodeBlock>{`# Instala GitHub CLI primero
+gh pr create --title "Nueva funcionalidad" --body "Descripción detallada"
+gh pr list
+gh pr view
+gh pr merge`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>8. Limpia después del merge:</strong>
+                    <CodeBlock>{`git checkout main
+git pull origin main
+git branch -d feature/nueva-funcionalidad
+git push origin --delete feature/nueva-funcionalidad`}</CodeBlock>
+                  </li>
+                </ol>
+                <div className="mt-6 bg-green-50 border border-green-200 rounded p-3">
+                  <p className="text-green-800 text-sm font-semibold mb-2">✅ Buenas prácticas para PRs:</p>
+                  <ul className="text-green-700 text-sm space-y-1">
+                    <li>• Mantén PRs pequeños y enfocados</li>
+                    <li>• Escribe descripciones claras</li>
+                    <li>• Incluye screenshots si hay UI</li>
+                    <li>• Responde a comentarios rápidamente</li>
+                    <li>• Haz self-review antes de crear el PR</li>
+                  </ul>
+                </div>
+              </div>
+            </details>
+
+            {/* Práctica 9: Estrategias de Merge Avanzadas */}
+            <details className="bg-white rounded-lg shadow-md">
+              <summary className="bg-gradient-to-r from-teal-600 to-cyan-600 text-white p-4 rounded-t-lg cursor-pointer font-bold">
+                🔀 Práctica 9: Estrategias de Merge Avanzadas
+              </summary>
+              <div className="p-6">
+                <div className="bg-teal-50 border border-teal-200 rounded p-3 mb-4">
+                  <p className="text-teal-800 text-sm">
+                    <strong>🎯 Objetivo:</strong> Dominar diferentes estrategias de merge para mantener un historial limpio y organizado.
+                  </p>
+                </div>
+                <h5 className="font-bold text-gray-800 mb-3">Pasos a seguir:</h5>
+                <ol className="space-y-3 text-gray-700">
+                  <li>
+                    <strong>1. Preparación - Crea ramas para experimentar:</strong>
+                    <CodeBlock>{`git checkout main
+git checkout -b feature/merge-normal
+echo "Feature A" > feature-a.txt
+git add . && git commit -m "Feature A implementation"
+
+git checkout main
+git checkout -b feature/merge-squash
+echo "Feature B line 1" > feature-b.txt
+git add . && git commit -m "Feature B: primera parte"
+echo "Feature B line 2" >> feature-b.txt
+git add . && git commit -m "Feature B: segunda parte"
+echo "Feature B line 3" >> feature-b.txt
+git add . && git commit -m "Feature B: tercera parte"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>2. Merge Normal (conserva historial):</strong>
+                    <CodeBlock>{`git checkout main
+git merge feature/merge-normal
+git log --oneline --graph`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">Crea un merge commit que conserva toda la historia</p>
+                  </li>
+                  <li>
+                    <strong>3. Merge con Squash (historial limpio):</strong>
+                    <CodeBlock>{`git merge --squash feature/merge-squash
+git status`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">Los cambios están staged pero no committed</p>
+                  </li>
+                  <li>
+                    <strong>4. Completa el squash merge:</strong>
+                    <CodeBlock>{`git commit -m "feat: implementar Feature B completa
+
+- Añadir primera parte de Feature B
+- Añadir segunda parte de Feature B  
+- Añadir tercera parte de Feature B"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>5. Experimenta con Fast-Forward:</strong>
+                    <CodeBlock>{`git checkout -b feature/fast-forward
+echo "Simple change" > simple.txt
+git add . && git commit -m "Simple change"
+
+git checkout main
+git merge --ff-only feature/fast-forward`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">No crea merge commit si es posible</p>
+                  </li>
+                  <li>
+                    <strong>6. Merge sin Fast-Forward (siempre crea merge commit):</strong>
+                    <CodeBlock>{`git checkout -b feature/no-ff
+echo "Another change" > another.txt
+git add . && git commit -m "Another change"
+
+git checkout main
+git merge --no-ff feature/no-ff`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>7. Rebase interactivo (alternativa al merge):</strong>
+                    <CodeBlock>{`git checkout -b feature/rebase-demo
+echo "Commit 1" > rebase.txt
+git add . && git commit -m "Commit 1"
+echo "Commit 2" >> rebase.txt
+git add . && git commit -m "Commit 2"
+echo "Commit 3" >> rebase.txt
+git add . && git commit -m "Commit 3"
+
+# Rebase interactivo para limpiar historial
+git rebase -i HEAD~3`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>8. Compara los historiales:</strong>
+                    <CodeBlock>{`git log --oneline --graph --all`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">Observa las diferencias entre cada estrategia</p>
+                  </li>
+                </ol>
+                <div className="mt-6 grid md:grid-cols-3 gap-4">
+                  <div className="bg-blue-50 border border-blue-200 rounded p-3">
+                    <p className="text-blue-800 text-sm font-semibold mb-2">📝 Merge Normal</p>
+                    <ul className="text-blue-700 text-sm space-y-1">
+                      <li>• Conserva todo el historial</li>
+                      <li>• Crea merge commits</li>
+                      <li>• Ideal para features grandes</li>
+                    </ul>
+                  </div>
+                  <div className="bg-green-50 border border-green-200 rounded p-3">
+                    <p className="text-green-800 text-sm font-semibold mb-2">🎯 Squash Merge</p>
+                    <ul className="text-green-700 text-sm space-y-1">
+                      <li>• Historial limpio</li>
+                      <li>• Un solo commit</li>
+                      <li>• Ideal para PRs pequeños</li>
+                    </ul>
+                  </div>
+                  <div className="bg-purple-50 border border-purple-200 rounded p-3">
+                    <p className="text-purple-800 text-sm font-semibold mb-2">🔄 Rebase</p>
+                    <ul className="text-purple-700 text-sm space-y-1">
+                      <li>• Historia lineal</li>
+                      <li>• Sin merge commits</li>
+                      <li>• Ideal para features coordinadas</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            {/* Práctica 10: Git Tags - Versionado */}
+            <details className="bg-white rounded-lg shadow-md">
+              <summary className="bg-gradient-to-r from-amber-600 to-yellow-600 text-white p-4 rounded-t-lg cursor-pointer font-bold">
+                🏷️ Práctica 10: Git Tags - Versionado y Releases
+              </summary>
+              <div className="p-6">
+                <div className="bg-amber-50 border border-amber-200 rounded p-3 mb-4">
+                  <p className="text-amber-800 text-sm">
+                    <strong>🎯 Objetivo:</strong> Aprender a crear y gestionar tags para marcar versiones importantes de tu proyecto.
+                  </p>
+                </div>
+                <h5 className="font-bold text-gray-800 mb-3">Pasos a seguir:</h5>
+                <ol className="space-y-3 text-gray-700">
+                  <li>
+                    <strong>1. Prepara el proyecto con algunos commits:</strong>
+                    <CodeBlock>{`# Simula desarrollo de features
+echo "function login() { return 'logged in'; }" > app.js
+git add app.js && git commit -m "feat: añadir función de login"
+
+echo "function logout() { return 'logged out'; }" >> app.js
+git add app.js && git commit -m "feat: añadir función de logout"
+
+echo "// Version 1.0.0 lista" >> app.js
+git add app.js && git commit -m "feat: completar funcionalidades básicas v1.0.0"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>2. Crea tu primer tag ligero (lightweight):</strong>
+                    <CodeBlock>{`git tag v1.0.0`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">Los tags ligeros son simples referencias a un commit específico</p>
+                  </li>
+                  <li>
+                    <strong>3. Ve todos los tags:</strong>
+                    <CodeBlock>{`git tag`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>4. Simula más desarrollo:</strong>
+                    <CodeBlock>{`echo "function resetPassword() { return 'password reset'; }" >> app.js
+git add app.js && git commit -m "feat: añadir reset de contraseña"
+
+echo "function validateEmail() { return true; }" >> app.js
+git add app.js && git commit -m "feat: añadir validación de email"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>5. Crea un tag anotado (recomendado para releases):</strong>
+                    <CodeBlock>{`git tag -a v1.1.0 -m "Release v1.1.0: Añadir funcionalidades de seguridad
+
+- Añadir función de reset de contraseña
+- Añadir validación de email
+- Mejoras de seguridad general"`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">Los tags anotados incluyen información del autor, fecha y mensaje</p>
+                  </li>
+                  <li>
+                    <strong>6. Ve información detallada de un tag:</strong>
+                    <CodeBlock>{`git show v1.1.0`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>7. Lista tags con patrón:</strong>
+                    <CodeBlock>{`git tag -l "v1.*"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>8. Crea un tag en un commit específico:</strong>
+                    <CodeBlock>{`# Ve el historial
+git log --oneline
+
+# Crea un tag en un commit anterior (usa el hash que veas)
+git tag -a v0.9.0 <commit-hash> -m "Release v0.9.0: Versión beta"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>9. Sube los tags al repositorio remoto:</strong>
+                    <CodeBlock>{`# Subir un tag específico
+git push origin v1.1.0
+
+# Subir todos los tags
+git push origin --tags`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>10. Elimina un tag (si es necesario):</strong>
+                    <CodeBlock>{`# Eliminar localmente
+git tag -d v0.9.0
+
+# Eliminar del remoto
+git push origin --delete v0.9.0`}</CodeBlock>
+                  </li>
+                </ol>
+                
+                <div className="mt-6 space-y-4">
+                  <h5 className="font-bold text-gray-800">🏷️ Tipos de Tags:</h5>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="bg-blue-50 border border-blue-200 rounded p-3">
+                      <p className="text-blue-800 text-sm font-semibold mb-2">📌 Tags Ligeros (Lightweight)</p>
+                      <ul className="text-blue-700 text-sm space-y-1">
+                        <li>• Solo una referencia a un commit</li>
+                        <li>• <code>git tag v1.0.0</code></li>
+                        <li>• Útiles para marcadores temporales</li>
+                        <li>• No incluyen metadata extra</li>
+                      </ul>
+                    </div>
+                    <div className="bg-green-50 border border-green-200 rounded p-3">
+                      <p className="text-green-800 text-sm font-semibold mb-2">📋 Tags Anotados (Annotated)</p>
+                      <ul className="text-green-700 text-sm space-y-1">
+                        <li>• Objetos completos en Git</li>
+                        <li>• <code>git tag -a v1.0.0 -m "mensaje"</code></li>
+                        <li>• Incluyen autor, fecha, mensaje</li>
+                        <li>• Recomendados para releases</li>
+                      </ul>
+                    </div>
+                  </div>
+                  
+                  <h5 className="font-bold text-gray-800">🎯 Versionado Semántico (SemVer):</h5>
+                  <div className="bg-purple-50 border border-purple-200 rounded p-3">
+                    <p className="text-purple-800 text-sm font-semibold mb-2">📊 Formato: MAYOR.MENOR.PARCHE</p>
+                    <ul className="text-purple-700 text-sm space-y-1">
+                      <li>• <strong>MAYOR:</strong> Cambios incompatibles (v1.0.0 → v2.0.0)</li>
+                      <li>• <strong>MENOR:</strong> Funcionalidades nuevas compatibles (v1.0.0 → v1.1.0)</li>
+                      <li>• <strong>PARCHE:</strong> Corrección de bugs (v1.0.0 → v1.0.1)</li>
+                      <li>• <strong>Ejemplos:</strong> v1.0.0, v2.3.1, v0.1.0-beta</li>
+                    </ul>
+                  </div>
+                  
+                  <h5 className="font-bold text-gray-800">🚀 Comandos Adicionales Útiles:</h5>
+                  <div className="bg-gray-50 border border-gray-200 rounded p-3">
+                    <div className="space-y-2">
+                      <div>
+                        <code className="text-sm font-mono text-gray-700">git checkout v1.0.0</code>
+                        <p className="text-gray-600 text-sm">Cambiar a un tag específico (detached HEAD)</p>
+                      </div>
+                      <div>
+                        <code className="text-sm font-mono text-gray-700">git describe --tags</code>
+                        <p className="text-gray-600 text-sm">Mostrar el tag más cercano al commit actual</p>
+                      </div>
+                      <div>
+                        <code className="text-sm font-mono text-gray-700">git tag --sort=-version:refname</code>
+                        <p className="text-gray-600 text-sm">Listar tags ordenados por versión</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+                    <p className="text-yellow-800 text-sm font-semibold mb-2">💡 Consejos Pro:</p>
+                    <ul className="text-yellow-700 text-sm space-y-1">
+                      <li>• Usa tags anotados para releases oficiales</li>
+                      <li>• Sigue versionado semántico para consistencia</li>
+                      <li>• Incluye changelog en el mensaje del tag</li>
+                      <li>• Crea releases en GitHub/GitLab basados en tags</li>
+                      <li>• Usa prefijo 'v' para versiones (v1.0.0)</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
           </div>
 
           <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-6 mt-8">
