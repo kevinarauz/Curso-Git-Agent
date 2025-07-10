@@ -220,6 +220,67 @@ const HomePage = () => {
           </button>
         </div>
       </section>
+
+      {/* Credits Section */}
+      <section className="py-16 px-4 bg-gray-50">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-8">
+            Créditos y Reconocimientos
+          </h2>
+          <div className="bg-white rounded-lg shadow-md p-8 max-w-2xl mx-auto">
+            <div className="mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full mx-auto mb-4 flex items-center justify-center">
+                <User className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Portal Creado por
+              </h3>
+              <p className="text-lg text-primary font-medium mb-2">
+                Instructor de Programación y Desarrollo
+              </p>
+              <p className="text-gray-600 mb-4">
+                Especialista en Control de Versiones y DevOps
+              </p>
+            </div>
+            
+            <div className="border-t pt-6">
+              <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                Sobre este Portal
+              </h4>
+              <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                Este portal de capacitación fue desarrollado con el objetivo de proporcionar una experiencia 
+                de aprendizaje completa e interactiva para Git, GitLab y GitHub. Combina teoría sólida, 
+                ejercicios prácticos y un sistema de gamificación para hacer el aprendizaje más efectivo y divertido.
+              </p>
+              
+              <div className="flex flex-wrap justify-center gap-2 mb-4">
+                <span className="px-3 py-1 bg-git-orange text-white text-xs rounded-full">Git Expert</span>
+                <span className="px-3 py-1 bg-gitlab-orange text-white text-xs rounded-full">GitLab Specialist</span>
+                <span className="px-3 py-1 bg-github-dark text-white text-xs rounded-full">GitHub Pro</span>
+                <span className="px-3 py-1 bg-primary text-white text-xs rounded-full">React Developer</span>
+              </div>
+              
+              <div className="text-xs text-gray-500">
+                <p className="mb-1">
+                  💡 <strong>Tecnologías utilizadas:</strong> React + TypeScript, Tailwind CSS, Vite
+                </p>
+                <p className="mb-1">
+                  🎯 <strong>Objetivo:</strong> Democratizar el aprendizaje del control de versiones
+                </p>
+                <p>
+                  📚 <strong>Versión:</strong> 1.0.0 - Portal de Capacitación Git Interactivo
+                </p>
+              </div>
+            </div>
+            
+            <div className="mt-6 pt-4 border-t">
+              <p className="text-xs text-gray-400">
+                "El conocimiento es poder, pero compartir el conocimiento es empoderamiento"
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
