@@ -79,7 +79,9 @@ const GitManualPage: React.FC = () => {
       'commit-master': 'Maestro del Commit',
       'staging-specialist': 'Especialista del Stage',
       'branch-wizard': 'Mago de las Ramas',
-      'advanced-sorcerer': 'Hechicero Avanzado'
+      'advanced-sorcerer': 'Hechicero Avanzado',
+      'hands-on-hero': 'Héroe Práctico',
+      'conflict-resolver': 'Resolvedor de Conflictos'
     };
     return badges[badge] || 'Badge Especial';
   };
@@ -92,7 +94,9 @@ const GitManualPage: React.FC = () => {
       'commit-master': '¡Tu primer commit está en la historia!',
       'staging-specialist': '¡Controlas qué entra en cada commit!',
       'branch-wizard': '¡Creaste y fusionaste tu primera rama!',
-      'advanced-sorcerer': '¡Has explorado los conceptos avanzados!'
+      'advanced-sorcerer': '¡Has explorado los conceptos avanzados!',
+      'hands-on-hero': '¡Has completado todas las prácticas!',
+      'conflict-resolver': '¡Dominas la resolución de conflictos!'
     };
     return descriptions[badge] || 'Has completado una sección especial';
   };
@@ -855,7 +859,7 @@ git stash apply stash@{0}`}</CodeBlock>
       id: 'practicas',
       title: '11. ¡Manos a la Obra! Prácticas Guiadas',
       xp: 25,
-      badge: 'hands-on-hero',
+      badge: 'conflict-resolver',
       content: (
         <div className="space-y-6">
           <p className="text-lg text-gray-700 leading-relaxed">
@@ -1063,6 +1067,107 @@ git commit -m "feat: agregar hoja de estilos"`}</CodeBlock>
                 </ol>
               </div>
             </details>
+
+            {/* Práctica 5: Resolución de Conflictos */}
+            <details className="bg-white rounded-lg shadow-md">
+              <summary className="bg-gradient-to-r from-red-600 to-pink-600 text-white p-4 rounded-t-lg cursor-pointer font-bold">
+                ⚔️ Práctica 5: Resolución de Conflictos
+              </summary>
+              <div className="p-6">
+                <div className="bg-red-50 border border-red-200 rounded p-3 mb-4">
+                  <p className="text-red-800 text-sm">
+                    <strong>🎯 Objetivo:</strong> Aprender a resolver conflictos de merge que Git no puede resolver automáticamente.
+                  </p>
+                </div>
+                <h5 className="font-bold text-gray-800 mb-3">Pasos a seguir:</h5>
+                <ol className="space-y-3 text-gray-700">
+                  <li>
+                    <strong>1. Crea un archivo de prueba:</strong>
+                    <CodeBlock>{`echo "Línea original del archivo" > Test.txt
+git add Test.txt
+git commit -m "Archivo inicial Test.txt"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>2. Crea una rama para hacer cambios:</strong>
+                    <CodeBlock>{`git checkout -b feature-branch
+echo "Cambio desde feature-branch" > Test.txt
+git add Test.txt
+git commit -m "Modificación en feature-branch"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>3. Regresa a main y haz un cambio diferente:</strong>
+                    <CodeBlock>{`git checkout main
+echo "Cambio desde main branch" > Test.txt
+git add Test.txt
+git commit -m "Modificación en main"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>4. Intenta fusionar (esto creará un conflicto):</strong>
+                    <CodeBlock>{`git merge feature-branch`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">🔥 Git te dirá que hay un conflicto automático que no puede resolver</p>
+                  </li>
+                  <li>
+                    <strong>5. Abre Test.txt y verás los marcadores de conflicto:</strong>
+                    <div className="bg-gray-100 p-4 rounded-lg mt-2">
+                      <pre className="text-sm font-mono text-gray-800">
+{`<<<<<<< HEAD
+Cambio desde main branch
+=======
+Cambio desde feature-branch
+>>>>>>> feature-branch`}
+                      </pre>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-2">
+                      <strong>Explicación:</strong> 
+                      <br />• <code>{'<<<<<<< HEAD'}</code> marca el inicio del contenido de tu rama actual
+                      <br />• <code>{'======='}</code> separa los dos contenidos en conflicto
+                      <br />• <code>{'>>>>>>> feature-branch'}</code> marca el final del contenido de la otra rama
+                    </p>
+                  </li>
+                  <li>
+                    <strong>6. Edita el archivo para resolver el conflicto:</strong>
+                    <p className="text-sm text-gray-600 mt-2">Puedes elegir quedarte con una versión, ambas, o crear una nueva. Por ejemplo:</p>
+                    <CodeBlock>{`echo "Cambio combinado: main + feature-branch" > Test.txt`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">O edita manualmente el archivo eliminando los marcadores y quedándote con el contenido que prefieras</p>
+                  </li>
+                  <li>
+                    <strong>7. Marca el conflicto como resuelto:</strong>
+                    <CodeBlock>{`git add Test.txt`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>8. Finaliza el merge:</strong>
+                    <CodeBlock>{`git commit -m "Resuelto conflicto en Test.txt"`}</CodeBlock>
+                  </li>
+                  <li>
+                    <strong>9. Verifica la resolución:</strong>
+                    <CodeBlock>{`git log --oneline --graph
+cat Test.txt`}</CodeBlock>
+                    <p className="text-sm text-gray-600 mt-2">🎉 ¡Conflicto resuelto exitosamente!</p>
+                  </li>
+                </ol>
+                
+                <div className="mt-6 space-y-4">
+                  <h5 className="font-bold text-gray-800">🛠️ Herramientas Adicionales:</h5>
+                  <div className="bg-blue-50 border border-blue-200 rounded p-3">
+                    <p className="text-blue-800 text-sm font-semibold mb-2">Opción 1: Usar un asistente visual</p>
+                    <CodeBlock>{`git mergetool`}</CodeBlock>
+                    <p className="text-blue-700 text-sm mt-2">Esto abrirá una herramienta gráfica para resolver conflictos (si está configurada)</p>
+                  </div>
+                  <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+                    <p className="text-yellow-800 text-sm font-semibold mb-2">Opción 2: Cancelar el merge si cambias de opinión</p>
+                    <CodeBlock>{`git merge --abort`}</CodeBlock>
+                    <p className="text-yellow-700 text-sm mt-2">Esto regresa tu repositorio al estado anterior al merge</p>
+                  </div>
+                  <div className="bg-green-50 border border-green-200 rounded p-3">
+                    <p className="text-green-800 text-sm font-semibold mb-2">💡 Consejo Pro:</p>
+                    <p className="text-green-700 text-sm">
+                      Para evitar conflictos, mantén una comunicación constante con tu equipo y 
+                      haz pull frecuentemente para mantener tu rama actualizada.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </details>
           </div>
 
           <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-6 mt-8">
@@ -1089,6 +1194,144 @@ git commit -m "feat: agregar hoja de estilos"`}</CodeBlock>
                   <li>🔧 Configura aliases para eficiencia</li>
                 </ul>
               </div>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'masterclass',
+      title: '12. Masterclass: Comandos Avanzados',
+      xp: 30,
+      badge: 'hands-on-hero',
+      content: (
+        <div className="space-y-6">
+          <p className="text-lg text-gray-700 leading-relaxed">
+            🎉 ¡Has completado todas las prácticas básicas! Ahora es momento de conocer algunos comandos 
+            avanzados que te convertirán en un verdadero experto de Git.
+          </p>
+
+          <div className="grid gap-6">
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h4 className="font-bold text-gray-800 mb-4 flex items-center">
+                <Terminal className="w-5 h-5 mr-2 text-purple-600" />
+                🔍 Comandos de Investigación
+              </h4>
+              <div className="space-y-3">
+                <div className="bg-gray-50 p-3 rounded">
+                  <code className="text-sm font-mono text-purple-700">git blame archivo.txt</code>
+                  <p className="text-gray-600 text-sm mt-1">Ver quién escribió cada línea de un archivo</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded">
+                  <code className="text-sm font-mono text-purple-700">git log --author="nombre"</code>
+                  <p className="text-gray-600 text-sm mt-1">Ver commits de un autor específico</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded">
+                  <code className="text-sm font-mono text-purple-700">git log --since="2 weeks ago"</code>
+                  <p className="text-gray-600 text-sm mt-1">Ver commits desde una fecha específica</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded">
+                  <code className="text-sm font-mono text-purple-700">git diff HEAD~1</code>
+                  <p className="text-gray-600 text-sm mt-1">Comparar con el commit anterior</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h4 className="font-bold text-gray-800 mb-4 flex items-center">
+                <GitBranch className="w-5 h-5 mr-2 text-blue-600" />
+                🌿 Comandos de Ramas Avanzados
+              </h4>
+              <div className="space-y-3">
+                <div className="bg-gray-50 p-3 rounded">
+                  <code className="text-sm font-mono text-blue-700">git branch -r</code>
+                  <p className="text-gray-600 text-sm mt-1">Listar todas las ramas remotas</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded">
+                  <code className="text-sm font-mono text-blue-700">git branch -a</code>
+                  <p className="text-gray-600 text-sm mt-1">Listar todas las ramas (locales y remotas)</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded">
+                  <code className="text-sm font-mono text-blue-700">git branch --merged</code>
+                  <p className="text-gray-600 text-sm mt-1">Ver ramas que ya fueron fusionadas</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded">
+                  <code className="text-sm font-mono text-blue-700">git branch -d $(git branch --merged | grep -v main)</code>
+                  <p className="text-gray-600 text-sm mt-1">Eliminar todas las ramas ya fusionadas</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h4 className="font-bold text-gray-800 mb-4 flex items-center">
+                <Settings className="w-5 h-5 mr-2 text-green-600" />
+                ⚙️ Configuración y Aliases
+              </h4>
+              <div className="space-y-3">
+                <div className="bg-gray-50 p-3 rounded">
+                  <code className="text-sm font-mono text-green-700">git config --global alias.st status</code>
+                  <p className="text-gray-600 text-sm mt-1">Crear alias: <code>git st</code> = <code>git status</code></p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded">
+                  <code className="text-sm font-mono text-green-700">git config --global alias.co checkout</code>
+                  <p className="text-gray-600 text-sm mt-1">Crear alias: <code>git co</code> = <code>git checkout</code></p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded">
+                  <code className="text-sm font-mono text-green-700">git config --global alias.br branch</code>
+                  <p className="text-gray-600 text-sm mt-1">Crear alias: <code>git br</code> = <code>git branch</code></p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded">
+                  <code className="text-sm font-mono text-green-700">git config --global alias.lg "log --oneline --graph --all"</code>
+                  <p className="text-gray-600 text-sm mt-1">Alias para un log hermoso: <code>git lg</code></p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h4 className="font-bold text-gray-800 mb-4 flex items-center">
+                <GitCommit className="w-5 h-5 mr-2 text-red-600" />
+                🔄 Comandos de Corrección
+              </h4>
+              <div className="space-y-3">
+                <div className="bg-gray-50 p-3 rounded">
+                  <code className="text-sm font-mono text-red-700">git commit --amend</code>
+                  <p className="text-gray-600 text-sm mt-1">Editar el último commit (mensaje o contenido)</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded">
+                  <code className="text-sm font-mono text-red-700">git reset HEAD~1</code>
+                  <p className="text-gray-600 text-sm mt-1">Deshacer el último commit (mantiene cambios)</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded">
+                  <code className="text-sm font-mono text-red-700">git checkout -- archivo.txt</code>
+                  <p className="text-gray-600 text-sm mt-1">Descartar cambios en un archivo específico</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded">
+                  <code className="text-sm font-mono text-red-700">git clean -fd</code>
+                  <p className="text-gray-600 text-sm mt-1">Eliminar archivos no rastreados</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-6 mt-8">
+            <h4 className="font-bold text-purple-900 mb-3 flex items-center">
+              <Play className="w-5 h-5 mr-2" />
+              🎯 ¡Reto Final!
+            </h4>
+            <p className="text-purple-800 mb-4">
+              Ahora que conoces estos comandos avanzados, desafíate a ti mismo:
+            </p>
+            <ul className="text-purple-700 space-y-2">
+              <li>🔥 Crea aliases para tus comandos más usados</li>
+              <li>🚀 Practica rebase interactivo para limpiar tu historial</li>
+              <li>🎨 Usa git log con diferentes formatos para visualizar tu historial</li>
+              <li>🤝 Contribuye a un proyecto open source en GitHub</li>
+            </ul>
+            <div className="mt-4 p-3 bg-white/50 rounded">
+              <p className="text-sm text-purple-800">
+                <strong>💡 Pro tip:</strong> Los verdaderos expertos de Git no memorizan todos los comandos, 
+                sino que saben dónde buscar y cómo combinarlos para resolver problemas específicos.
+              </p>
             </div>
           </div>
         </div>
@@ -1155,7 +1398,7 @@ git commit -m "feat: agregar hoja de estilos"`}</CodeBlock>
 const getSectionIcon = (index: number): React.ReactNode => {
   const icons = [
     <GitBranch className="w-6 h-6" />,        // 1. Introducción
-    <Download className="w-6 h-6" />,         // 2. Instalación
+    <Download className="w-6 h-6" />,         // // 2. Instalación
     <Settings className="w-6 h-6" />,         // 3. Configuración
     <Folder className="w-6 h-6" />,           // 4. Creando Repositorios
     <GitCommit className="w-6 h-6" />,        // 5. Flujo de Trabajo
@@ -1164,7 +1407,8 @@ const getSectionIcon = (index: number): React.ReactNode => {
     <Cloud className="w-6 h-6" />,            // 8. Remotos
     <Terminal className="w-6 h-6" />,         // 9. Terminal
     <GitMerge className="w-6 h-6" />,         // 10. Avanzados
-    <Play className="w-6 h-6" />              // 11. Prácticas
+    <Play className="w-6 h-6" />,             // 11. Prácticas
+    <Settings className="w-6 h-6" />          // 12. Masterclass
   ];
   return icons[index % icons.length];
 };
