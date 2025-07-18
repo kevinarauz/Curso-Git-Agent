@@ -28,4 +28,6 @@ export default defineConfig({
   define: {
     __DEV__: false,
   },
+  // Configurar archivos públicos
+  publicDir: 'public'
 })
