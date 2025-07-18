@@ -1,0 +1,35 @@
+# GitHub Pages Cache Control
+<IfModule mod_headers.c>
+    # Disable caching for HTML files
+    <FilesMatch "\.(html|htm)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires 0
+    </FilesMatch>
+    
+    # Cache assets for 1 hour
+    <FilesMatch "\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$">
+        Header set Cache-Control "max-age=3600, public"
+    </FilesMatch>
+</IfModule>
+
+# MIME Type Configuration
+<IfModule mod_mime.c>
+    AddType application/javascript .js
+    AddType application/javascript .mjs
+    AddType text/javascript .js
+    AddType text/javascript .mjs
+    AddType application/json .json
+    AddType image/svg+xml .svg
+</IfModule>
+
+# Force correct MIME types for ES modules
+<FilesMatch "\.(js|mjs)$">
+    Header set Content-Type "application/javascript"
+</FilesMatch>
+
+# Redirect root to Curso-Git-Agent
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^$ /Curso-Git-Agent/ [R=301,L]
+</IfModule>
