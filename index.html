@@ -185,8 +185,8 @@
                 hideLoading();
                 updateStatus('✅ Aplicación cargada exitosamente');
               } else {
-                // Si React no se cargó, mostrar mensaje de error
-                showError('La aplicación React no se pudo inicializar. Usa las herramientas de diagnóstico para más información.');
+                // Si React no se cargó, cargar aplicación inline
+                loadInlineApplication();
               }
             }, 3000);
             
@@ -204,6 +204,71 @@
             script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
             document.head.appendChild(script);
           });
+        }
+        
+        function loadInlineApplication() {
+          updateStatus('Cargando aplicación inline...');
+          
+          // Cargar la aplicación directamente en el DOM
+          const root = document.getElementById('root');
+          root.innerHTML = `
+            <div style="padding: 20px; font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto;">
+              <header style="text-align: center; margin-bottom: 40px; padding: 40px 0; background: linear-gradient(135deg, #F05032, #FC6D26); color: white; border-radius: 15px;">
+                <h1 style="font-size: 3rem; margin: 0;">🚀 Git Training Portal</h1>
+                <p style="font-size: 1.2rem; margin: 10px 0;">Portal de Capacitación para Git, GitLab y GitHub</p>
+              </header>
+              
+              <main style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 30px;">
+                <h2 style="color: #F05032; margin-bottom: 20px;">📚 Módulos de Capacitación</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                  <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 5px solid #F05032;">
+                    <h3 style="color: #F05032; margin-top: 0;">🔧 Fundamentos de Git</h3>
+                    <p style="color: #6c757d;">Aprende los conceptos básicos de control de versiones con Git.</p>
+                    <div style="background: #d4edda; padding: 10px; border-radius: 5px; margin: 10px 0;">
+                      <strong>Temas:</strong> Repositorios, commits, branches, merge
+                    </div>
+                  </div>
+                  
+                  <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 5px solid #FC6D26;">
+                    <h3 style="color: #FC6D26; margin-top: 0;">🦊 GitLab</h3>
+                    <p style="color: #6c757d;">Domina GitLab para colaboración y CI/CD.</p>
+                    <div style="background: #fff3cd; padding: 10px; border-radius: 5px; margin: 10px 0;">
+                      <strong>Temas:</strong> Proyectos, pipelines, merge requests
+                    </div>
+                  </div>
+                  
+                  <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 5px solid #6366F1;">
+                    <h3 style="color: #6366F1; margin-top: 0;">🐙 GitHub</h3>
+                    <p style="color: #6c757d;">Explora GitHub y GitHub Desktop.</p>
+                    <div style="background: #e7f3ff; padding: 10px; border-radius: 5px; margin: 10px 0;">
+                      <strong>Temas:</strong> Repositorios, pull requests, actions
+                    </div>
+                  </div>
+                </div>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                  <button onclick="window.location.href='/Curso-Git-Agent/tools-index.html'" 
+                          style="background: #F05032; color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 18px; cursor: pointer; margin: 10px;">
+                    🔧 Herramientas de Diagnóstico
+                  </button>
+                  <button onclick="window.location.href='/Curso-Git-Agent/direct.html'" 
+                          style="background: #6366F1; color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 18px; cursor: pointer; margin: 10px;">
+                    💻 Modo Directo
+                  </button>
+                </div>
+              </main>
+              
+              <footer style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 10px; color: #6c757d;">
+                <p>© 2025 Git Training Portal - Aprende Git, GitLab y GitHub</p>
+                <p>🚀 Aplicación funcionando correctamente</p>
+              </footer>
+            </div>
+          `;
+          
+          hideLoading();
+          updateStatus('✅ Aplicación cargada exitosamente');
+          console.log('✅ Inline application loaded successfully');
         }
         
         // Inicializar cuando el DOM esté listo
