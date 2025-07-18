@@ -6,7 +6,7 @@
   "description": "Git Training Portal for Git, GitLab, and GitHub Desktop",
   "homepage": "https://kevinarauz.github.io/",
   "scripts": {
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -d dist",
     "dev": "vite",
     "dev:stable": "vite --config vite.config.stable.ts",
     "dev:static": "vite --config vite.config.static.ts",
