@@ -39,6 +39,7 @@ filesToCopy.forEach(file => {
     const source = path.join(__dirname, 'public', file);
     const destination = path.join(__dirname, 'dist', file);
     
+    console.log(`🔍 Buscando: ${source}`);
     if (fs.existsSync(source)) {
         copyFile(source, destination);
     } else {
