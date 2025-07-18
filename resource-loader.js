@@ -1,6 +1,41 @@
-// Resource Loader with Multiple Fallbacks
+// Enhanced Resource Loader with Auto-Detection
 (function() {
-    console.log('🚀 Resource Loader initialized');
+    console.log('🚀 Enhanced Resource Loader initialized');
+    
+    // Función para detectar el archivo JS principal
+    async function detectMainScript() {
+        console.log('� Detecting main script...');
+        
+        // Buscar en el HTML actual los scripts que terminan en .js
+        const scripts = Array.from(document.querySelectorAll('script[src*=".js"]'));
+        const jsFiles = scripts.map(script => script.src).filter(src => src.includes('/assets/'));
+        
+        if (jsFiles.length > 0) {
+            console.log('✅ Found JS files in HTML:', jsFiles);
+            return jsFiles[0];
+        }
+        
+        // Si no encuentra nada, buscar en el directorio assets
+        const assetsPaths = [
+            '/Curso-Git-Agent/assets/index.js',
+            '/Curso-Git-Agent/assets/main.js',
+            '/Curso-Git-Agent/assets/app.js'
+        ];
+        
+        for (const path of assetsPaths) {
+            try {
+                const response = await fetch(path, { method: 'HEAD' });
+                if (response.ok) {
+                    console.log('✅ Found main script:', path);
+                    return path;
+                }
+            } catch (error) {
+                console.log('❌ Not found:', path);
+            }
+        }
+        
+        return null;
+    }
     
     // Función para cargar recursos con fallbacks
     function loadWithFallbacks(resourcePaths, type = 'script') {
@@ -61,12 +96,65 @@
         });
     }
     
-    // Cargar el script principal con fallbacks
-    const mainScriptPaths = [
-        '/Curso-Git-Agent/src/main.tsx',
-        './src/main.tsx',
-        'src/main.tsx'
-    ];
+    // Función principal para cargar la aplicación
+    async function loadApplication() {
+        console.log('📦 Loading application...');
+        
+        try {
+            // Primero, intentar cargar el script principal desde src/main.tsx
+            const mainScriptPaths = [
+                '/Curso-Git-Agent/src/main.tsx',
+                './src/main.tsx',
+                'src/main.tsx'
+            ];
+            
+            console.log('🎯 Attempting to load main script...');
+            
+            try {
+                const mainPath = await loadWithFallbacks(mainScriptPaths, 'script');
+                console.log(`✅ Main script loaded from: ${mainPath}`);
+            } catch (error) {
+                console.log('⚠️ Main script not found, trying to detect compiled version...');
+                
+                // Si no puede cargar main.tsx, buscar el archivo compilado
+                const compiledScript = await detectMainScript();
+                if (compiledScript) {
+                    const script = document.createElement('script');
+                    script.type = 'module';
+                    script.src = compiledScript;
+                    script.onload = () => console.log(`✅ Compiled script loaded: ${compiledScript}`);
+                    script.onerror = () => console.error(`❌ Failed to load compiled script: ${compiledScript}`);
+                    document.head.appendChild(script);
+                } else {
+                    throw new Error('No main script found');
+                }
+            }
+            
+        } catch (error) {
+            console.error('❌ All script loading attempts failed:', error);
+            
+            // Mostrar mensaje de error al usuario
+            const root = document.getElementById('root');
+            if (root) {
+                root.innerHTML = `
+                    <div style="font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f8f9fa;">
+                        <h1 style="color: #F05032;">🔧 Error de Carga</h1>
+                        <p style="color: #6c757d; font-size: 18px;">La aplicación no se pudo cargar correctamente.</p>
+                        <p style="color: #6c757d;">Por favor, verifica que los recursos estén disponibles.</p>
+                        <button onclick="location.reload()" style="background: #F05032; color: white; border: none; padding: 15px 30px; border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 20px;">
+                            🔄 Recargar Página
+                        </button>
+                        <div style="margin-top: 30px; padding: 20px; background: #e9ecef; border-radius: 5px; text-align: left;">
+                            <h3>🔍 Diagnóstico</h3>
+                            <p>• <a href="/Curso-Git-Agent/debug.html" target="_blank">Página de Debug</a></p>
+                            <p>• <a href="/Curso-Git-Agent/resource-check.html" target="_blank">Verificación de Recursos</a></p>
+                            <p>• <a href="/Curso-Git-Agent/quick-test.html" target="_blank">Test Rápido</a></p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+    }
     
     // Cargar manifest con fallbacks
     const manifestPaths = [
@@ -75,33 +163,27 @@
         'site.webmanifest'
     ];
     
-    // Intentar cargar el manifest
     loadWithFallbacks(manifestPaths, 'link')
         .then(path => console.log(`✅ Manifest loaded from: ${path}`))
-        .catch(error => console.error('❌ All manifest paths failed:', error));
+        .catch(error => console.warn('⚠️ Manifest not loaded:', error.message));
     
-    // Función para cargar el script principal cuando el DOM esté listo
-    function loadMainScript() {
-        console.log('📦 Loading main script...');
-        loadWithFallbacks(mainScriptPaths, 'script')
-            .then(path => console.log(`✅ Main script loaded from: ${path}`))
-            .catch(error => {
-                console.error('❌ All main script paths failed:', error);
-                // Mostrar mensaje de error al usuario
-                document.body.innerHTML = `
-                    <div style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-                        <h1>Error de Carga</h1>
-                        <p>No se pudo cargar la aplicación. Por favor, recarga la página.</p>
-                        <button onclick="location.reload()">Recargar</button>
-                    </div>
-                `;
-            });
+    // Función para cargar cuando el DOM esté listo
+    function initWhenReady() {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadApplication);
+        } else {
+            loadApplication();
+        }
     }
     
-    // Esperar a que el DOM esté listo
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadMainScript);
-    } else {
-        loadMainScript();
-    }
+    // Inicializar
+    initWhenReady();
+    
+    // Información de debugging
+    console.log('🔍 Debug info:', {
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        timestamp: new Date().toISOString(),
+        documentState: document.readyState
+    });
 })();
