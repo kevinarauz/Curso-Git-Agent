@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { CheckCircle, X, Award, Star } from 'lucide-react';
 
 interface ToastProps {
@@ -18,10 +18,10 @@ const Toast: React.FC<ToastProps> = ({
   duration = 5000, 
   onClose 
 }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isExiting, setIsExiting] = useState(false);
+  const [isVisible, setIsVisible] = React.useState(false);
+  const [isExiting, setIsExiting] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Mostrar el toast con animación de entrada
     const showTimer = setTimeout(() => setIsVisible(true), 100);
     

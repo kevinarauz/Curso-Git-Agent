@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:stable": "vite --config vite.config.stable.ts",
+    "dev:static": "vite --config vite.config.static.ts",
+    "dev:no-refresh": "vite build && vite preview",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useGame } from '../contexts/GameContext';
 import { 
   GitBranch, 
@@ -27,10 +27,10 @@ interface Section {
 
 const GitManualPage: React.FC = () => {
   const { addPoints, unlockBadge, user } = useGame();
-  const [completedSections, setCompletedSections] = useState<string[]>([]);
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+  const [completedSections, setCompletedSections] = React.useState<string[]>([]);
+  const [expandedSections, setExpandedSections] = React.useState<Record<string, boolean>>({});
 
-  useEffect(() => {
+  React.useEffect(() => {
     const saved = localStorage.getItem('git-manual-progress');
     if (saved) {
       setCompletedSections(JSON.parse(saved));
@@ -104,7 +104,7 @@ const GitManualPage: React.FC = () => {
   };
 
   const CodeBlock: React.FC<{ children: string }> = ({ children }) => {
-    const [copied, setCopied] = useState(false);
+    const [copied, setCopied] = React.useState(false);
 
     const copyToClipboard = () => {
       navigator.clipboard.writeText(children);

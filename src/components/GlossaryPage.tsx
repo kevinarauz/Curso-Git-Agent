@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React from 'react';
 import { 
   Search, 
   BookMarked, 
@@ -12,22 +12,22 @@ import type { GlossaryTerm } from '../types';
 
 const GlossaryPage: React.FC = () => {
   const { generateWithContinuation } = useAIContinuation();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [expandedTerm, setExpandedTerm] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [selectedCategory, setSelectedCategory] = React.useState<string>('all');
+  const [expandedTerm, setExpandedTerm] = React.useState<string | null>(null);
   
   // Modal states
-  const [showModal, setShowModal] = useState(false);
-  const [modalTitle, setModalTitle] = useState('');
-  const [modalContent, setModalContent] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isContinuing, setIsContinuing] = useState(false);
+  const [showModal, setShowModal] = React.useState(false);
+  const [modalTitle, setModalTitle] = React.useState('');
+  const [modalContent, setModalContent] = React.useState('');
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isContinuing, setIsContinuing] = React.useState(false);
   
   // Ref para el contenido del modal
-  const modalContentRef = useRef<HTMLDivElement>(null);
+  const modalContentRef = React.useRef<HTMLDivElement>(null);
 
   // Effects para manejar scroll del modal
-  useEffect(() => {
+  React.useEffect(() => {
     if (showModal) {
       // Bloquear scroll de la página principal
       document.body.style.overflow = 'hidden';
@@ -72,7 +72,7 @@ const GlossaryPage: React.FC = () => {
     tools: 'Herramientas'
   };
 
-  const filteredTerms = useMemo(() => {
+  const filteredTerms = React.useMemo(() => {
     let terms = glossaryTerms;
 
     if (selectedCategory !== 'all') {

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import * as React from 'react';
+const { useState } = React;
 import { GameProvider } from './contexts/GameContext';
 import GitManualPage from './components/GitManualPage';
 import AIAssistant from './components/AIAssistant';
 import GlossaryPage from './components/GlossaryPage';
 import AchievementsPage from './components/AchievementsPage';
 import ExercisesPage from './components/ExercisesPage';
+import ExamenPage from './components/ExamenPage';
 import ProfilePage from './components/ProfilePage';
 import Footer from './components/Footer';
 import ToastContainer, { type ToastMessage } from './components/ToastContainer';
@@ -18,7 +20,8 @@ import {
   Home,
   Bot,
   Menu,
-  X
+  X,
+  Award
 } from 'lucide-react';
 import './App.css';
 
@@ -31,6 +34,7 @@ const Navigation = ({ activeTab, setActiveTab }: { activeTab: string; setActiveT
     { id: 'manual', label: 'Manual Git', icon: BookOpen },
     { id: 'ai-assistant', label: 'IA Asistente', icon: Bot },
     { id: 'exercises', label: 'Ejercicios', icon: Target },
+    { id: 'examen', label: 'Examen', icon: Award },
     { id: 'glossary', label: 'Glosario', icon: BookMarked },
     { id: 'achievements', label: 'Logros', icon: Trophy },
     { id: 'profile', label: 'Perfil', icon: User },
@@ -289,10 +293,16 @@ function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
+  // Generador de IDs únicos
+  let toastIdCounter = 0;
+  const generateUniqueId = () => {
+    return `${Date.now()}-${++toastIdCounter}`;
+  };
+
   const addToast = (toast: Omit<ToastMessage, 'id'>) => {
     const newToast: ToastMessage = {
       ...toast,
-      id: Date.now().toString(),
+      id: generateUniqueId(),
     };
     setToasts(prev => [...prev, newToast]);
   };
@@ -340,6 +350,8 @@ function App() {
         return <AIAssistant />;
       case 'exercises':
         return <ExercisesPage />;
+      case 'examen':
+        return <ExamenPage />;
       case 'glossary':
         return <GlossaryPage />;
       case 'achievements':

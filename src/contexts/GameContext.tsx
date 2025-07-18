@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, useState, type ReactNode } from 'react';
+import React from 'react';
 import type { GameContextType, User, GameProgress, Settings, Badge } from '../types';
 
 export interface ToastMessage {
@@ -263,18 +263,18 @@ const loadFromStorage = (): GameState | null => {
 };
 
 // Contexto
-const GameContext = createContext<GameContextType | undefined>(undefined);
+const GameContext = React.createContext<GameContextType | undefined>(undefined);
 
 // Provider
 interface GameProviderProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
-  const [state, dispatch] = useReducer(gameReducer, initialState);
+  const [state, dispatch] = React.useReducer(gameReducer, initialState);
 
   // Cargar estado desde localStorage al inicializar
-  useEffect(() => {
+  React.useEffect(() => {
     const savedState = loadFromStorage();
     if (savedState) {
       dispatch({ type: 'LOAD_STATE', payload: savedState });
@@ -282,12 +282,12 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   }, []);
 
   // Guardar estado en localStorage cuando cambie
-  useEffect(() => {
+  React.useEffect(() => {
     saveToStorage(state);
   }, [state]);
 
   // Actualizar streak diariamente
-  useEffect(() => {
+  React.useEffect(() => {
     const interval = setInterval(() => {
       dispatch({ type: 'UPDATE_STREAK' });
     }, 60000); // Verificar cada minuto
@@ -361,7 +361,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
 
 // Hook personalizado
 export const useGame = (): GameContextType => {
-  const context = useContext(GameContext);
+  const context = React.useContext(GameContext);
   if (!context) {
     throw new Error('useGame debe ser usado dentro de un GameProvider');
   }
