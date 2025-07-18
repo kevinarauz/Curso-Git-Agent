@@ -44,7 +44,7 @@ export const usePreventAutoRefresh = (isModalOpen: boolean) => {
       window.addEventListener('popstate', preventNavigation);
 
       // Bloquear WebSocket reconnection de Vite si existe
-      if ((window as any).__vite_plugin_react_preamble_installed__) {
+      if ((window as typeof window & { __vite_plugin_react_preamble_installed__?: boolean }).__vite_plugin_react_preamble_installed__) {
         console.warn('🚫 Vite HMR detectado y bloqueado durante modal');
       }
 
