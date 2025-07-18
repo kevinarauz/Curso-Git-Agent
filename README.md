@@ -2,6 +2,8 @@
 
 Portal web interactivo para aprender Git, GitLab y GitHub Desktop con teoría, ejercicios prácticos, gamificación y más.
 
+<!-- Updated: 18 de julio de 2025 -->
+
 ## 🚀 Características
 
 ### 📚 Contenido Completo
