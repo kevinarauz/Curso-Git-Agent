@@ -2,50 +2,44 @@
 
 ## Problema identificado
 
-El sitio se estaba cargando desde `https://kevinarauz.github.io/` (dominio raíz) pero la configuración estaba esperando `https://kevinarauz.github.io/Curso-Git-Agent/` (subdirectorio).
+El sitio se está desplegando en `https://kevinarauz.github.io/Curso-Git-Agent/` (subdirectorio) pero la configuración estaba preparada para dominio raíz.
 
 ## Solución aplicada
 
 ### 1. Cambio en `vite.config.ts`
 ```typescript
-// ANTES (incorrecto para dominio raíz)
+// CORRECTO para subdirectorio
 base: '/Curso-Git-Agent/',
-
-// DESPUÉS (correcto para dominio raíz)
-base: '/',
 ```
 
 ### 2. Cambio en `package.json`
 ```json
-// ANTES
+// CORRECTO para subdirectorio
 "homepage": "https://kevinarauz.github.io/Curso-Git-Agent",
-
-// DESPUÉS
-"homepage": "https://kevinarauz.github.io",
 ```
 
 ### 3. Resultado
-- ✅ Los archivos ahora se cargan desde la raíz `/`
-- ✅ `site.webmanifest` se carga desde `/site.webmanifest`
-- ✅ Los assets se cargan desde `/assets/`
-- ✅ El main.tsx se carga desde `/assets/index-[hash].js`
+- ✅ Los archivos ahora se cargan desde `/Curso-Git-Agent/`
+- ✅ `site.webmanifest` se carga desde `/Curso-Git-Agent/site.webmanifest`
+- ✅ Los assets se cargan desde `/Curso-Git-Agent/assets/`
+- ✅ El JavaScript se carga desde `/Curso-Git-Agent/assets/index-[hash].js`
+- ✅ El CSS se carga desde `/Curso-Git-Agent/assets/index-[hash].css`
 
 ## Configuración de GitHub Pages
 
 Para que funcione correctamente, en GitHub Pages debe estar configurado:
 - **Source**: GitHub Actions
-- **Custom domain**: `kevinarauz.github.io` (dominio raíz)
+- **URL**: `https://kevinarauz.github.io/Curso-Git-Agent/`
 
 ## URLs importantes
 
-- **Sitio web**: https://kevinarauz.github.io/
+- **Sitio web**: https://kevinarauz.github.io/Curso-Git-Agent/
 - **Repository**: https://github.com/kevinarauz/Curso-Git-Agent
 - **Actions**: https://github.com/kevinarauz/Curso-Git-Agent/actions
 
-## Nota importante
+## Verificación
 
-Si el dominio fuera `https://kevinarauz.github.io/Curso-Git-Agent/`, entonces sí necesitaríamos:
-- `base: '/Curso-Git-Agent/'`
-- `homepage: "https://kevinarauz.github.io/Curso-Git-Agent"`
-
-But since it's serving from the root domain, we use root paths.
+Una vez desplegado, todos los recursos deberían cargarse correctamente:
+- `https://kevinarauz.github.io/Curso-Git-Agent/` - Página principal
+- `https://kevinarauz.github.io/Curso-Git-Agent/site.webmanifest` - Manifest
+- `https://kevinarauz.github.io/Curso-Git-Agent/assets/` - Assets (JS/CSS)
