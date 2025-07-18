@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "description": "Git Training Portal for Git, GitLab, and GitHub Desktop",
-  "homepage": "https://kevinarauz.github.io/",
+  "homepage": "https://kevinarauz.github.io/Curso-Git-Agent/",
   "scripts": {
     "deploy": "gh-pages -d dist",
     "dev": "vite",
