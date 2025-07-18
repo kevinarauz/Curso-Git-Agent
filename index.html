@@ -10,6 +10,9 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     
+    <!-- Force reload timestamp -->
+    <meta name="build-time" content="2025-07-18-20:14" />
+    
     <title>Git Training Portal - Aprende Git, GitLab y GitHub</title>
     <meta name="description" content="Portal interactivo para aprender Git, GitLab y GitHub Desktop con teoría, ejercicios prácticos y gamificación" />
     <meta name="keywords" content="git, gitlab, github, control de versiones, desarrollo, programación, tutorial" />
@@ -169,7 +172,7 @@
               console.log('🔄 React not loaded, loading inline application');
               loadInlineApplication();
             }
-          }, 1000); // Tiempo mínimo para verificar React
+          }, 3000); // Aumentar tiempo para que React se cargue
         }
         
         function loadScript(src) {
