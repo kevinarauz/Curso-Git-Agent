@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 
 // Configuración ESTABLE para desarrollo - Sin auto refresh
 export default defineConfig({
+  base: '/Curso-Git-Agent/',
   plugins: [react()],
   server: {
     hmr: false, // Sin Hot Module Replacement
