@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Pages Diagnostics</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .diagnostic-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+        .warning {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #f59e0b;
+        }
+        .info {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+        }
+        .code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .urls {
+            list-style: none;
+            padding: 0;
+        }
+        .urls li {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+        .urls a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+        .urls a:hover {
+            text-decoration: underline;
+        }
+        .icon {
+            font-size: 1.2em;
+        }
+        .button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 GitHub Pages Diagnostics</h1>
+        
+        <div class="diagnostic-section">
+            <h2>📍 Current Configuration</h2>
+            <div class="code">
+                <strong>Current URL:</strong> <span id="current-url"></span><br>
+                <strong>Expected URL:</strong> https://kevinarauz.github.io/Curso-Git-Agent/<br>
+                <strong>Base Path:</strong> /Curso-Git-Agent/<br>
+                <strong>Deploy Time:</strong> 2025-07-18T16:30:00Z
+            </div>
+        </div>
+
+        <div class="diagnostic-section">
+            <h2>🔗 Resource Loading Tests</h2>
+            <div id="resource-tests">
+                <div class="info">
+                    <span class="icon">⏳</span>
+                    Running tests...
+                </div>
+            </div>
+        </div>
+
+        <div class="diagnostic-section">
+            <h2>🌐 Expected Resources</h2>
+            <ul class="urls">
+                <li>
+                    <a href="/Curso-Git-Agent/" target="_blank">
+                        Main Application: /Curso-Git-Agent/
+                    </a>
+                </li>
+                <li>
+                    <a href="/Curso-Git-Agent/site.webmanifest" target="_blank">
+                        Web Manifest: /Curso-Git-Agent/site.webmanifest
+                    </a>
+                </li>
+                <li>
+                    <a href="/Curso-Git-Agent/vite.svg" target="_blank">
+                        Favicon: /Curso-Git-Agent/vite.svg
+                    </a>
+                </li>
+                <li>
+                    <a href="/Curso-Git-Agent/test.html" target="_blank">
+                        Test Page: /Curso-Git-Agent/test.html
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="diagnostic-section">
+            <h2>🚀 Actions</h2>
+            <button class="button" onclick="location.reload()">🔄 Refresh Tests</button>
+            <button class="button" onclick="clearCache()">🗑️ Clear Cache</button>
+            <button class="button" onclick="window.open('https://github.com/kevinarauz/Curso-Git-Agent/actions', '_blank')">📊 View Actions</button>
+        </div>
+    </div>
+
+    <script>
+        // Update current URL
+        document.getElementById('current-url').textContent = window.location.href;
+
+        // Test resources
+        const tests = [
+            { name: 'Main App', url: '/Curso-Git-Agent/', type: 'page' },
+            { name: 'Web Manifest', url: '/Curso-Git-Agent/site.webmanifest', type: 'json' },
+            { name: 'Favicon', url: '/Curso-Git-Agent/vite.svg', type: 'image' },
+            { name: 'Test Page', url: '/Curso-Git-Agent/test.html', type: 'page' }
+        ];
+
+        function clearCache() {
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    names.forEach(function(name) {
+                        caches.delete(name);
+                    });
+                });
+            }
+            location.reload(true);
+        }
+
+        function runTests() {
+            const container = document.getElementById('resource-tests');
+            container.innerHTML = '';
+
+            tests.forEach(test => {
+                const testDiv = document.createElement('div');
+                testDiv.className = 'status warning';
+                testDiv.innerHTML = `<span class="icon">⏳</span> Testing ${test.name}...`;
+                container.appendChild(testDiv);
+
+                fetch(test.url)
+                    .then(response => {
+                        testDiv.className = response.ok ? 'status success' : 'status error';
+                        testDiv.innerHTML = `
+                            <span class="icon">${response.ok ? '✅' : '❌'}</span>
+                            <strong>${test.name}</strong>: ${response.ok ? 'OK' : 'FAILED'} (${response.status})
+                            <br><small>URL: ${test.url}</small>
+                        `;
+                    })
+                    .catch(error => {
+                        testDiv.className = 'status error';
+                        testDiv.innerHTML = `
+                            <span class="icon">❌</span>
+                            <strong>${test.name}</strong>: ERROR - ${error.message}
+                            <br><small>URL: ${test.url}</small>
+                        `;
+                    });
+            });
+        }
+
+        // Run tests on load
+        setTimeout(runTests, 1000);
+    </script>
+</body>
+</html>
