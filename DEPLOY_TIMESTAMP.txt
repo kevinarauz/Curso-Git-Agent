@@ -1,0 +1,3 @@
+Deploy timestamp: 2025-07-18T16:30:00Z
+This file forces a new deployment to clear GitHub Pages cache.
+Configuration: base: '/Curso-Git-Agent/' for subdirectory deployment.
