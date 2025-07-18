@@ -319,7 +319,7 @@ export interface PaginationOptions {
   limit: number;
   sortBy: string;
   sortOrder: 'asc' | 'desc';
-  filters: Record<string, any>;
+  filters: Record<string, string | number | boolean>;
 }
 
 export interface PaginatedResponse<T> {

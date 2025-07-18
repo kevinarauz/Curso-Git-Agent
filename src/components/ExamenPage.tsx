@@ -1,7 +1,7 @@
 import * as React from 'react';
 const { useEffect } = React;
 import { Clock, FileText, CheckCircle, AlertCircle, Trophy, Download, Terminal } from 'lucide-react';
-import { useGame } from '../contexts/GameContext';
+import { useGame } from '../hooks/useGame';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { usePreventAutoRefresh, useModalPositionLock } from '../hooks/usePreventAutoRefresh';
 import { createStaticCertificateModal } from '../utils/staticCertificate';
@@ -189,7 +189,7 @@ const ExamenPage: React.FC = () => {
       }, 1000);
     }
     return () => clearInterval(timer);
-  }, [examStarted, timeLeft]);
+  }, [examStarted, timeLeft]); // setTimeLeft is stable from useState, using functional form
 
   const startExam = () => {
     setExamStarted(true);

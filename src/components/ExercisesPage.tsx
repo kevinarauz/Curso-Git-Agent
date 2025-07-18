@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useGame } from '../contexts/GameContext';
+import { useGame } from '../hooks/useGame';
 import { Play, CheckCircle, Clock, Target, Trophy, Code } from 'lucide-react';
 
 interface Exercise {
@@ -14,7 +14,7 @@ interface Exercise {
 }
 
 const ExercisesPage: React.FC = () => {
-  const { user, addPoints } = useGame();
+  const { addPoints } = useGame();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [completedExercises, setCompletedExercises] = useState<string[]>([]);
 

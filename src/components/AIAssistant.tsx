@@ -76,7 +76,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
       } else {
         setCommitError(result.error || 'Error al generar el mensaje de commit.');
       }
-    } catch (error) {
+    } catch {
       setCommitError('Error de conexión. Verifica tu configuración de API.');
     } finally {
       setCommitLoading(false);
@@ -117,7 +117,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
       } else {
         setCommandError(result.error || 'Error al buscar el comando.');
       }
-    } catch (error) {
+    } catch {
       setCommandError('Error de conexión. Verifica tu configuración de API.');
     } finally {
       setCommandLoading(false);
@@ -159,7 +159,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
       } else {
         setComparisonError(result.error || 'Error al comparar comandos');
       }
-    } catch (error) {
+    } catch {
       setComparisonError('Error de conexión. Verifica tu configuración de IA.');
     } finally {
       setComparisonLoading(false);
@@ -201,7 +201,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
       } else {
         setErrorError(result.error || 'Error al analizar el problema');
       }
-    } catch (error) {
+    } catch {
       setErrorError('Error de conexión. Verifica tu configuración de IA.');
     } finally {
       setErrorLoading(false);
@@ -686,7 +686,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
               </label>
               <select
                 value={currentProvider}
-                onChange={(e) => setCurrentProvider(e.target.value as any)}
+                onChange={(e) => setCurrentProvider(e.target.value as 'gemini' | 'openai' | 'anthropic' | 'ollama')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="gemini">Google Gemini (Recomendado)</option>

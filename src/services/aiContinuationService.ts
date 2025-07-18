@@ -82,7 +82,7 @@ class AIContinuationService {
   private async makeInitialCall(
     prompt: string, 
     type: 'commit' | 'command',
-    _config: ContinuationConfig // Marcado con _ para indicar que no se usa por ahora
+    _config: ContinuationConfig
   ): Promise<AIResponse & { wasTruncated?: boolean }> {
     const enhancedPrompt = this.enhancePromptForContinuation(prompt, type);
     

@@ -294,18 +294,15 @@ function App() {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   // Generador de IDs únicos
-  let toastIdCounter = 0;
-  const generateUniqueId = () => {
-    return `${Date.now()}-${++toastIdCounter}`;
-  };
-
-  const addToast = (toast: Omit<ToastMessage, 'id'>) => {
+  const toastIdCounterRef = React.useRef(0);
+  
+  const addToast = React.useCallback((toast: Omit<ToastMessage, 'id'>) => {
     const newToast: ToastMessage = {
       ...toast,
-      id: generateUniqueId(),
+      id: `${Date.now()}-${++toastIdCounterRef.current}`,
     };
     setToasts(prev => [...prev, newToast]);
-  };
+  }, []);
 
   const removeToast = (id: string) => {
     setToasts(prev => prev.filter(toast => toast.id !== id));
@@ -338,7 +335,7 @@ function App() {
       window.removeEventListener('points-earned', handlePointsEarned as EventListener);
       window.removeEventListener('badge-unlocked', handleBadgeUnlocked as EventListener);
     };
-  }, []);
+  }, [addToast]);
 
   const renderContent = () => {
     switch (activeTab) {
