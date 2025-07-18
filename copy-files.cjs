@@ -19,6 +19,7 @@ const filesToCopy = [
     'test.html',
     'error-check.html',
     'success.html',
+    'pages-index.html',
     'github-pages-fix.js',
     '.htaccess',
     '.nojekyll'
