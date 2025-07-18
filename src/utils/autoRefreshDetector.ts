@@ -74,7 +74,7 @@ export class AutoRefreshDetector {
         console.warn('🔄 WebSocket connection detected (posible HMR)');
         onRefreshDetected();
       }
-    } as typeof WebSocket;
+    } as any;
 
     return () => {
       observer.disconnect();

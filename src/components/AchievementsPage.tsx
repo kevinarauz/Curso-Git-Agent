@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useGame } from '../hooks/useGame';
+import { useGame } from '../contexts/GameContext';
 import { Trophy, Award, Star, Target, Clock, Zap, Calendar, TrendingUp } from 'lucide-react';
 
 const AchievementsPage: React.FC = () => {
@@ -281,7 +281,7 @@ const AchievementsPage: React.FC = () => {
               { name: 'Luis Programmer', points: 2650, level: 7, badge: '🥉' },
               { name: 'María García', points: 2400, level: 6, badge: '🏅' },
               { name: 'Tú', points: achievements.totalPoints, level: achievements.currentLevel, badge: '⭐' },
-            ].map((player) => (
+            ].map((player, index) => (
               <div
                 key={player.name}
                 className={`flex items-center justify-between p-4 rounded-lg ${

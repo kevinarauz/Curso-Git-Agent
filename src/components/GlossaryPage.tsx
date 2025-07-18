@@ -128,7 +128,7 @@ const GlossaryPage: React.FC = () => {
       } else {
         setModalContent(result.error || 'Error al obtener explicación');
       }
-    } catch {
+    } catch (error) {
       setModalContent('Error de conexión. Verifica tu configuración de IA.');
     } finally {
       setIsLoading(false);

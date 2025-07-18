@@ -1,6 +1,5 @@
 import React from 'react';
 import type { GameContextType, User, GameProgress, Settings, Badge } from '../types';
-import { GameContext } from './GameContextImpl';
 
 export interface ToastMessage {
   id: string;
@@ -263,7 +262,8 @@ const loadFromStorage = (): GameState | null => {
   return null;
 };
 
-// Contexto - imported from GameContextImpl
+// Contexto
+const GameContext = React.createContext<GameContextType | undefined>(undefined);
 
 // Provider
 interface GameProviderProps {
@@ -359,6 +359,39 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   );
 };
 
-export { GameContext } from './GameContextImpl';
-export { type GameContextType } from '../types';
-export default GameProvider;
+// Hook personalizado
+export const useGame = (): GameContextType => {
+  const context = React.useContext(GameContext);
+  if (!context) {
+    throw new Error('useGame debe ser usado dentro de un GameProvider');
+  }
+  return context;
+};
+
+// Función para calcular el progreso del nivel
+export const calculateLevelProgress = (currentExperience: number, experienceToNextLevel: number): number => {
+  const currentLevelExp = currentExperience;
+  return Math.floor((currentLevelExp / experienceToNextLevel) * 100);
+};
+
+// Función para formatear números grandes
+export const formatNumber = (num: number): string => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
+  }
+  return num.toString();
+};
+
+// Función para calcular tiempo estimado
+export const formatTime = (minutes: number): string => {
+  if (minutes >= 60) {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins}m`;
+  }
+  return `${minutes}m`;
+};
+
+export default GameContext;

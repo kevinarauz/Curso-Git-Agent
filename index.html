@@ -2,281 +2,62 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/Curso-Git-Agent/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- Cache Control -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    
-    <!-- Force reload timestamp -->
-    <meta name="build-time" content="2025-07-18-20:14" />
-    
     <title>Git Training Portal - Aprende Git, GitLab y GitHub</title>
     <meta name="description" content="Portal interactivo para aprender Git, GitLab y GitHub Desktop con teoría, ejercicios prácticos y gamificación" />
     <meta name="keywords" content="git, gitlab, github, control de versiones, desarrollo, programación, tutorial" />
     <meta name="author" content="Git Training Portal" />
     
-    <!-- Web App Manifest with fallbacks -->
-    <link rel="manifest" href="/Curso-Git-Agent/site.webmanifest" />
-    <link rel="manifest" href="./site.webmanifest" />
-    <link rel="manifest" href="site.webmanifest" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://git-training-portal.com/" />
+    <meta property="og:title" content="Git Training Portal - Aprende Git, GitLab y GitHub" />
+    <meta property="og:description" content="Portal interactivo para aprender Git, GitLab y GitHub Desktop con teoría, ejercicios prácticos y gamificación" />
+    <meta property="og:image" content="/og-image.jpg" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://git-training-portal.com/" />
+    <meta property="twitter:title" content="Git Training Portal - Aprende Git, GitLab y GitHub" />
+    <meta property="twitter:description" content="Portal interactivo para aprender Git, GitLab y GitHub Desktop con teoría, ejercicios prácticos y gamificación" />
+    <meta property="twitter:image" content="/og-image.jpg" />
+    
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     
     <!-- Theme Color -->
     <meta name="theme-color" content="#F05032" />
     
-    <style>
-      /* Loading styles */
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background: linear-gradient(135deg, #F05032, #FC6D26);
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      
-      .loading-container {
-        background: white;
-        padding: 40px;
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        text-align: center;
-        max-width: 500px;
-      }
-      
-      .loading-spinner {
-        width: 50px;
-        height: 50px;
-        border: 5px solid #f3f3f3;
-        border-top: 5px solid #F05032;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin: 20px auto;
-      }
-      
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-      
-      h1 {
-        color: #F05032;
-        margin-bottom: 10px;
-      }
-      
-      .status {
-        color: #6c757d;
-        margin: 20px 0;
-      }
-      
-      .error {
-        color: #dc3545;
-        background: #f8d7da;
-        padding: 15px;
-        border-radius: 5px;
-        margin: 20px 0;
-      }
-      
-      .success {
-        color: #155724;
-        background: #d4edda;
-        padding: 15px;
-        border-radius: 5px;
-        margin: 20px 0;
-      }
-      
-      .btn {
-        background: #F05032;
-        color: white;
-        border: none;
-        padding: 12px 24px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        margin: 10px;
-        text-decoration: none;
-        display: inline-block;
-      }
-      
-      .btn:hover {
-        background: #d44428;
-      }
-      
-      #root {
-        width: 100%;
-        min-height: 100vh;
-      }
-    </style>
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- PWA Support -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Git Training Portal">
+    <meta name="apple-mobile-web-app-title" content="Git Training Portal">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="msapplication-TileColor" content="#F05032">
   </head>
   <body>
-    <div class="loading-container" id="loading">
-      <h1>🚀 Git Training Portal</h1>
-      <div class="loading-spinner"></div>
-      <div class="status" id="status">Cargando aplicación...</div>
-      <div id="error-container" style="display: none;">
-        <div class="error" id="error-message"></div>
-        <a href="/Curso-Git-Agent/tools-index.html" class="btn">🔧 Herramientas de Diagnóstico</a>
-        <a href="/Curso-Git-Agent/direct.html" class="btn">💻 Modo Directo</a>
-        <button class="btn" onclick="location.reload()">🔄 Reintentar</button>
-      </div>
-    </div>
-    
     <div id="root"></div>
-    
-    <!-- Script de React/TypeScript para Vite -->
-    <script type="module" src="./src/main.tsx"></script>
-    
-    <script>
-      // Sistema de carga inteligente
-      (function() {
-        console.log('🚀 Git Training Portal - Initializing...');
-        
-        const loadingContainer = document.getElementById('loading');
-        const statusElement = document.getElementById('status');
-        const errorContainer = document.getElementById('error-container');
-        const errorMessage = document.getElementById('error-message');
-        const root = document.getElementById('root');
-        
-        function updateStatus(message) {
-          statusElement.textContent = message;
-          console.log(message);
-        }
-        
-        function showError(message) {
-          errorMessage.textContent = message;
-          errorContainer.style.display = 'block';
-          console.error(message);
-        }
-        
-        function hideLoading() {
-          loadingContainer.style.display = 'none';
-        }
-        
-        async function loadApplication() {
-          updateStatus('Inicializando aplicación...');
-          
-          // Dar tiempo breve para que React se cargue si está disponible
-          setTimeout(() => {
-            const reactRoot = document.getElementById('root');
-            if (reactRoot && reactRoot.innerHTML.trim() !== '') {
-              // React se cargó correctamente
-              hideLoading();
-              updateStatus('✅ Aplicación cargada exitosamente');
-              console.log('✅ React application loaded successfully');
-            } else {
-              // React no se cargó, cargar aplicación inline
-              console.log('🔄 React not loaded, loading inline application');
-              loadInlineApplication();
-            }
-          }, 3000); // Aumentar tiempo para que React se cargue
-        }
-        
-        function loadScript(src) {
-          return new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = src;
-            script.onload = resolve;
-            script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
-            document.head.appendChild(script);
-          });
-        }
-        
-        function loadInlineApplication() {
-          console.log('🚀 Loading inline application...');
-          updateStatus('Cargando aplicación inline...');
-          
-          // Asegurar que el loading se oculte
-          const loadingContainer = document.getElementById('loading');
-          if (loadingContainer) {
-            loadingContainer.style.display = 'none';
-          }
-          
-          // Cargar la aplicación directamente en el DOM
-          const root = document.getElementById('root');
-          if (root) {
-            root.innerHTML = `
-              <div style="padding: 20px; font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto;">
-                <header style="text-align: center; margin-bottom: 40px; padding: 40px 0; background: linear-gradient(135deg, #F05032, #FC6D26); color: white; border-radius: 15px;">
-                  <h1 style="font-size: 3rem; margin: 0;">🚀 Git Training Portal</h1>
-                  <p style="font-size: 1.2rem; margin: 10px 0;">Portal de Capacitación para Git, GitLab y GitHub</p>
-                </header>
-                
-                <main style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 30px;">
-                  <h2 style="color: #F05032; margin-bottom: 20px;">📚 Módulos de Capacitación</h2>
-                  
-                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
-                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 5px solid #F05032;">
-                      <h3 style="color: #F05032; margin-top: 0;">🔧 Fundamentos de Git</h3>
-                      <p style="color: #6c757d;">Aprende los conceptos básicos de control de versiones con Git.</p>
-                      <div style="background: #d4edda; padding: 10px; border-radius: 5px; margin: 10px 0;">
-                        <strong>Temas:</strong> Repositorios, commits, branches, merge
-                      </div>
-                    </div>
-                    
-                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 5px solid #FC6D26;">
-                      <h3 style="color: #FC6D26; margin-top: 0;">🦊 GitLab</h3>
-                      <p style="color: #6c757d;">Domina GitLab para colaboración y CI/CD.</p>
-                      <div style="background: #fff3cd; padding: 10px; border-radius: 5px; margin: 10px 0;">
-                        <strong>Temas:</strong> Proyectos, pipelines, merge requests
-                      </div>
-                    </div>
-                    
-                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 5px solid #6366F1;">
-                      <h3 style="color: #6366F1; margin-top: 0;">🐙 GitHub</h3>
-                      <p style="color: #6c757d;">Explora GitHub y GitHub Desktop.</p>
-                      <div style="background: #e7f3ff; padding: 10px; border-radius: 5px; margin: 10px 0;">
-                        <strong>Temas:</strong> Repositorios, pull requests, actions
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div style="text-align: center; margin: 30px 0;">
-                    <button onclick="window.location.href='/Curso-Git-Agent/tools-index.html'" 
-                            style="background: #F05032; color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 18px; cursor: pointer; margin: 10px;">
-                      🔧 Herramientas de Diagnóstico
-                    </button>
-                    <button onclick="window.location.href='/Curso-Git-Agent/direct.html'" 
-                            style="background: #6366F1; color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 18px; cursor: pointer; margin: 10px;">
-                      💻 Modo Directo
-                    </button>
-                  </div>
-                </main>
-                
-                <footer style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 10px; color: #6c757d;">
-                  <p>© 2025 Git Training Portal - Aprende Git, GitLab y GitHub</p>
-                  <p>🚀 Aplicación inline funcionando correctamente</p>
-                </footer>
-              </div>
-            `;
-            
-            console.log('✅ Inline application loaded successfully');
-            updateStatus('✅ Aplicación cargada exitosamente');
-          } else {
-            console.error('❌ Root element not found');
-          }
-        }
-        
-        // Inicializar cuando el DOM esté listo
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', loadApplication);
-        } else {
-          loadApplication();
-        }
-        
-        // Fallback adicional: si después de 2 segundos no se carga nada, forzar aplicación inline
-        setTimeout(() => {
-          const reactRoot = document.getElementById('root');
-          if (reactRoot && reactRoot.innerHTML.trim() === '') {
-            console.log('🔄 Forcing inline application as final fallback');
-            loadInlineApplication();
-          }
-        }, 2000);
-        
-      })();
-    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>l>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React + TS</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

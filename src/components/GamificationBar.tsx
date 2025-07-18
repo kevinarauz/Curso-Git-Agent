@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGame } from '../hooks/useGame';
+import { useGame } from '../contexts/GameContext';
 import { Star, Trophy, Zap } from 'lucide-react';
 
 const GamificationBar: React.FC = () => {
