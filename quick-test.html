@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Simple - Git Training Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .status {
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .test-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .logs {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Test Simple GitHub Pages</h1>
+    <p>Prueba básica de recursos críticos</p>
+    
+    <div class="status" id="status">
+        ⏳ Preparando tests...
+    </div>
+    
+    <button class="test-btn" onclick="runQuickTest()">🚀 Ejecutar Test Rápido</button>
+    <button class="test-btn" onclick="testMainApp()">🎯 Probar App Principal</button>
+    
+    <div class="logs" id="logs"></div>
+    
+    <script>
+        function log(message) {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            logs.textContent += `[${timestamp}] ${message}\n`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+        
+        function updateStatus(message, isSuccess = false) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = isSuccess ? 'status success' : 'status error';
+        }
+        
+        async function runQuickTest() {
+            log('🚀 Iniciando test rápido...');
+            updateStatus('🔄 Ejecutando tests...');
+            
+            const tests = [
+                { name: 'Manifest', url: '/Curso-Git-Agent/site.webmanifest' },
+                { name: 'Vite SVG', url: '/Curso-Git-Agent/vite.svg' },
+                { name: 'GitHub Fix', url: '/Curso-Git-Agent/github-pages-fix.js' },
+                { name: 'Resource Loader', url: '/Curso-Git-Agent/resource-loader.js' }
+            ];
+            
+            let passed = 0;
+            let total = tests.length;
+            
+            for (const test of tests) {
+                try {
+                    const response = await fetch(test.url, { method: 'HEAD' });
+                    if (response.ok) {
+                        log(`✅ ${test.name}: OK (${response.status})`);
+                        passed++;
+                    } else {
+                        log(`❌ ${test.name}: ERROR (${response.status})`);
+                    }
+                } catch (error) {
+                    log(`❌ ${test.name}: NETWORK ERROR - ${error.message}`);
+                }
+            }
+            
+            const success = passed === total;
+            updateStatus(`${passed}/${total} tests passed`, success);
+            
+            if (success) {
+                log('🎉 Todos los recursos están disponibles!');
+            } else {
+                log('⚠️ Algunos recursos no están disponibles');
+            }
+        }
+        
+        async function testMainApp() {
+            log('🎯 Probando app principal...');
+            try {
+                const response = await fetch('/Curso-Git-Agent/', { method: 'HEAD' });
+                if (response.ok) {
+                    log('✅ App principal accesible');
+                    window.open('/Curso-Git-Agent/', '_blank');
+                } else {
+                    log(`❌ App principal no accesible: ${response.status}`);
+                }
+            } catch (error) {
+                log(`❌ Error al acceder app principal: ${error.message}`);
+            }
+        }
+        
+        // Auto-ejecutar test al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            log('📄 Página cargada');
+            log('🌐 URL actual: ' + window.location.href);
+            updateStatus('✅ Página lista para tests', true);
+        });
+    </script>
+</body>
+</html>
