@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Test Básico</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .box { background: white; padding: 20px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        .log { background: #f8f9fa; padding: 15px; font-family: monospace; font-size: 12px; border-radius: 5px; white-space: pre-wrap; max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="box info">
+        <h1>🔧 Test Básico GitHub Pages</h1>
+        <p><strong>URL:</strong> <span id="url"></span></p>
+        <p><strong>Timestamp:</strong> <span id="time"></span></p>
+    </div>
+    
+    <div class="box">
+        <h2>🎯 Tests Rápidos</h2>
+        <button onclick="testMainApp()">Test App Principal</button>
+        <button onclick="testResources()">Test Recursos</button>
+        <button onclick="testAll()">Test Completo</button>
+        <button onclick="clearLog()">Limpiar Log</button>
+    </div>
+    
+    <div class="box">
+        <h2>📊 Estado</h2>
+        <div id="status" class="info">Listo para tests</div>
+    </div>
+    
+    <div class="box">
+        <h2>📋 Log</h2>
+        <div id="log" class="log">Sistema inicializado...\n</div>
+    </div>
+    
+    <script>
+        // Inicializar
+        document.getElementById('url').textContent = window.location.href;
+        document.getElementById('time').textContent = new Date().toLocaleString();
+        
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.textContent += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function setStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `box ${type}`;
+        }
+        
+        function clearLog() {
+            document.getElementById('log').textContent = 'Log limpiado...\n';
+        }
+        
+        async function testMainApp() {
+            log('🎯 Testing main application...');
+            setStatus('Probando aplicación principal...', 'info');
+            
+            try {
+                const response = await fetch('/Curso-Git-Agent/', { method: 'HEAD' });
+                if (response.ok) {
+                    log('✅ Main app accessible');
+                    setStatus('✅ Aplicación principal accesible', 'success');
+                } else {
+                    log(`❌ Main app error: ${response.status}`);
+                    setStatus(`❌ Error ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Main app network error: ${error.message}`);
+                setStatus(`❌ Error de red: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testResources() {
+            log('📦 Testing critical resources...');
+            setStatus('Probando recursos críticos...', 'info');
+            
+            const resources = [
+                '/Curso-Git-Agent/site.webmanifest',
+                '/Curso-Git-Agent/vite.svg',
+                '/Curso-Git-Agent/github-pages-fix.js',
+                '/Curso-Git-Agent/resource-loader.js'
+            ];
+            
+            let success = 0;
+            for (const resource of resources) {
+                try {
+                    const response = await fetch(resource, { method: 'HEAD' });
+                    if (response.ok) {
+                        log(`✅ ${resource.split('/').pop()}: OK`);
+                        success++;
+                    } else {
+                        log(`❌ ${resource.split('/').pop()}: Error ${response.status}`);
+                    }
+                } catch (error) {
+                    log(`❌ ${resource.split('/').pop()}: Network error`);
+                }
+            }
+            
+            setStatus(`${success}/${resources.length} recursos accesibles`, success === resources.length ? 'success' : 'error');
+        }
+        
+        async function testAll() {
+            log('🚀 Running complete test suite...');
+            setStatus('Ejecutando tests completos...', 'info');
+            
+            await testMainApp();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await testResources();
+            
+            log('✅ All tests completed');
+        }
+        
+        log('✅ Test page loaded successfully');
+    </script>
+</body>
+</html>
