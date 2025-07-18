@@ -13,6 +13,21 @@
     </FilesMatch>
 </IfModule>
 
+# MIME Type Configuration
+<IfModule mod_mime.c>
+    AddType application/javascript .js
+    AddType application/javascript .mjs
+    AddType text/javascript .js
+    AddType text/javascript .mjs
+    AddType application/json .json
+    AddType image/svg+xml .svg
+</IfModule>
+
+# Force correct MIME types for ES modules
+<FilesMatch "\.(js|mjs)$">
+    Header set Content-Type "application/javascript"
+</FilesMatch>
+
 # Redirect root to Curso-Git-Agent
 <IfModule mod_rewrite.c>
     RewriteEngine On
