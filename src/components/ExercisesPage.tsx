@@ -14,7 +14,7 @@ interface Exercise {
 }
 
 const ExercisesPage: React.FC = () => {
-  const { user, addPoints } = useGame();
+  const { addPoints } = useGame();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [completedExercises, setCompletedExercises] = useState<string[]>([]);
 

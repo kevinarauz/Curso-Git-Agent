@@ -281,7 +281,7 @@ const AchievementsPage: React.FC = () => {
               { name: 'Luis Programmer', points: 2650, level: 7, badge: '🥉' },
               { name: 'María García', points: 2400, level: 6, badge: '🏅' },
               { name: 'Tú', points: achievements.totalPoints, level: achievements.currentLevel, badge: '⭐' },
-            ].map((player, index) => (
+            ].map((player) => (
               <div
                 key={player.name}
                 className={`flex items-center justify-between p-4 rounded-lg ${
