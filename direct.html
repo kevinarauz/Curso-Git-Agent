@@ -119,27 +119,39 @@
                 // Verificar si la aplicación principal está disponible
                 const response = await fetch('/Curso-Git-Agent/src/main.tsx');
                 if (response.ok) {
-                    log('✅ Main script found, loading...');
+                    log('✅ Main script found, but needs processing...');
                     
-                    // Cargar el script principal
-                    const script = document.createElement('script');
-                    script.type = 'module';
-                    script.src = '/Curso-Git-Agent/src/main.tsx';
-                    script.onload = () => {
-                        log('✅ Main application loaded successfully');
-                        setStatus('✅ Aplicación cargada exitosamente', 'success');
-                    };
-                    script.onerror = () => {
-                        log('❌ Failed to load main application');
-                        setStatus('❌ Error al cargar la aplicación', 'error');
-                    };
-                    document.head.appendChild(script);
+                    // En lugar de cargar el .tsx directamente, redirigir a la aplicación principal
+                    log('🔄 Redirecting to main application...');
+                    window.location.href = '/Curso-Git-Agent/';
+                    
                 } else {
                     throw new Error(`HTTP ${response.status}`);
                 }
             } catch (error) {
                 log(`❌ Main application not accessible: ${error.message}`);
-                setStatus('❌ Aplicación no disponible', 'error');
+                log('🔄 Attempting alternative loading method...');
+                
+                // Intentar cargar desde el index.html principal
+                try {
+                    const iframe = document.createElement('iframe');
+                    iframe.src = '/Curso-Git-Agent/';
+                    iframe.style.width = '100%';
+                    iframe.style.height = '600px';
+                    iframe.style.border = 'none';
+                    iframe.style.borderRadius = '10px';
+                    
+                    const root = document.getElementById('root');
+                    root.innerHTML = '';
+                    root.appendChild(iframe);
+                    
+                    log('✅ Application loaded in iframe');
+                    setStatus('✅ Aplicación cargada en iframe', 'success');
+                    
+                } catch (iframeError) {
+                    log(`❌ Iframe loading failed: ${iframeError.message}`);
+                    setStatus('❌ No se pudo cargar la aplicación', 'error');
+                }
             }
         }
         
