@@ -1,16 +1,38 @@
 {
   "name": "git-training-portal",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "Portal interactivo para aprender Git, GitLab y GitHub Desktop con teoría, ejercicios prácticos y gamificación",
+  "keywords": ["git", "gitlab", "github", "education", "training", "react", "typescript", "vite"],
+  "author": "Kevin Arauz",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kevinarauz/Curso-Git-Agent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kevinarauz/Curso-Git-Agent/issues"
+  },
+  "homepage": "https://github.com/kevinarauz/Curso-Git-Agent#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "dev:stable": "vite --config vite.config.stable.ts",
     "dev:static": "vite --config vite.config.static.ts",
     "dev:no-refresh": "vite build && vite preview",
     "build": "tsc -b && vite build",
+    "build:analyze": "npm run build && npx vite-bundle-analyzer dist/assets/*.js",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "lint:fix": "eslint . --fix",
+    "type-check": "tsc --noEmit",
+    "preview": "vite preview",
+    "clean": "rm -rf dist node_modules/.vite",
+    "check-deps": "npm audit && npm outdated",
+    "format": "prettier --write .",
+    "validate": "npm run type-check && npm run lint && npm run build"
   },
   "dependencies": {
     "@types/node": "^24.0.12",
