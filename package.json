@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/kevinarauz/Curso-Git-Agent/issues"
   },
-  "homepage": "https://kevinarauz.github.io/Curso-Git-Agent",
+  "homepage": "https://kevinarauz.github.io",
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=8.0.0"

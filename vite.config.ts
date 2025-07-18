@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 // Configuración SIN AUTO-REFRESH pero con React funcionando
 export default defineConfig({
   plugins: [react()],
-  base: '/Curso-Git-Agent/', // Configuración para GitHub Pages
+  base: '/', // Configuración para GitHub Pages sin subdirectorio
   server: {
     hmr: false, // Desactiva completamente HMR
     watch: {
