@@ -32,7 +32,7 @@
     "dev:stable": "vite --config vite.config.stable.ts",
     "dev:static": "vite --config vite.config.static.ts",
     "dev:no-refresh": "vite build && vite preview",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node copy-files.cjs",
     "build:analyze": "npm run build && npx vite-bundle-analyzer dist/assets/*.js",
     "deploy": "npm run build && gh-pages -d dist",
     "lint": "eslint .",
