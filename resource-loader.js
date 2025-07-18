@@ -4,7 +4,7 @@
     
     // Función para detectar el archivo JS principal
     async function detectMainScript() {
-        console.log('� Detecting main script...');
+        console.log('🔍 Detecting main script...');
         
         // Buscar en el HTML actual los scripts que terminan en .js
         const scripts = Array.from(document.querySelectorAll('script[src*=".js"]'));
@@ -15,14 +15,24 @@
             return jsFiles[0];
         }
         
-        // Si no encuentra nada, buscar en el directorio assets
+        // Si no encuentra nada, buscar archivos con hash en assets
         const assetsPaths = [
             '/Curso-Git-Agent/assets/index.js',
             '/Curso-Git-Agent/assets/main.js',
             '/Curso-Git-Agent/assets/app.js'
         ];
         
-        for (const path of assetsPaths) {
+        // Buscar también archivos con hash común de Vite
+        const hashPatterns = [
+            '/Curso-Git-Agent/assets/index-CjHu_5UW.js',
+            '/Curso-Git-Agent/assets/index-DwcGaxKW.js',
+            '/Curso-Git-Agent/assets/main-CjHu_5UW.js',
+            '/Curso-Git-Agent/assets/app-CjHu_5UW.js'
+        ];
+        
+        const allPaths = [...assetsPaths, ...hashPatterns];
+        
+        for (const path of allPaths) {
             try {
                 const response = await fetch(path, { method: 'HEAD' });
                 if (response.ok) {
