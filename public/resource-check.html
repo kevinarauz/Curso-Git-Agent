@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Recursos - Git Training Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #F05032, #FC6D26);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .loading {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .logs {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .refresh-btn {
+            background: linear-gradient(135deg, #6366F1, #8B5CF6);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        .refresh-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔍 Verificación de Recursos</h1>
+        <p>Diagnóstico completo del estado de GitHub Pages</p>
+    </div>
+
+    <div class="test-section">
+        <h2>🌐 Información del Entorno</h2>
+        <div class="test-item">
+            <span>URL Actual:</span>
+            <span id="current-url"></span>
+        </div>
+        <div class="test-item">
+            <span>User Agent:</span>
+            <span id="user-agent"></span>
+        </div>
+        <div class="test-item">
+            <span>Timestamp:</span>
+            <span id="timestamp"></span>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📁 Verificación de Recursos</h2>
+        <button class="refresh-btn" onclick="runTests()">🔄 Ejecutar Verificación</button>
+        <div id="resource-tests">
+            <!-- Los tests se cargarán aquí -->
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 Logs de Depuración</h2>
+        <div class="logs" id="debug-logs"></div>
+    </div>
+
+    <script>
+        // Función para agregar logs
+        function addLog(message) {
+            const logs = document.getElementById('debug-logs');
+            const timestamp = new Date().toLocaleTimeString();
+            logs.textContent += `[${timestamp}] ${message}\n`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        // Función para crear elemento de test
+        function createTestItem(label, url) {
+            const item = document.createElement('div');
+            item.className = 'test-item';
+            item.innerHTML = `
+                <span>${label}</span>
+                <span class="status loading" id="status-${btoa(url)}">VERIFICANDO...</span>
+            `;
+            return item;
+        }
+
+        // Función para actualizar estado de test
+        function updateTestStatus(url, success, details = '') {
+            const statusId = `status-${btoa(url)}`;
+            const statusElement = document.getElementById(statusId);
+            if (statusElement) {
+                if (success) {
+                    statusElement.textContent = '✅ OK';
+                    statusElement.className = 'status success';
+                } else {
+                    statusElement.textContent = `❌ ERROR ${details}`;
+                    statusElement.className = 'status error';
+                }
+            }
+        }
+
+        // Función para verificar un recurso
+        async function checkResource(url, label) {
+            addLog(`Verificando: ${label} (${url})`);
+            
+            try {
+                const response = await fetch(url, { 
+                    method: 'HEAD',
+                    cache: 'no-cache'
+                });
+                
+                const success = response.ok;
+                const details = success ? '' : `(${response.status})`;
+                
+                updateTestStatus(url, success, details);
+                addLog(`${label}: ${success ? 'OK' : 'ERROR'} ${details}`);
+                
+                return success;
+            } catch (error) {
+                updateTestStatus(url, false, `(${error.message})`);
+                addLog(`${label}: ERROR - ${error.message}`);
+                return false;
+            }
+        }
+
+        // Función principal para ejecutar todos los tests
+        async function runTests() {
+            addLog('🚀 Iniciando verificación de recursos...');
+            
+            const testsContainer = document.getElementById('resource-tests');
+            testsContainer.innerHTML = '';
+            
+            // Lista de recursos a verificar
+            const resources = [
+                {
+                    label: 'Manifest (Ruta principal)',
+                    url: '/Curso-Git-Agent/site.webmanifest'
+                },
+                {
+                    label: 'Manifest (Ruta relativa)',
+                    url: './site.webmanifest'
+                },
+                {
+                    label: 'Manifest (Ruta directa)',
+                    url: 'site.webmanifest'
+                },
+                {
+                    label: 'Vite SVG (Ruta principal)',
+                    url: '/Curso-Git-Agent/vite.svg'
+                },
+                {
+                    label: 'Vite SVG (Ruta relativa)',
+                    url: './vite.svg'
+                },
+                {
+                    label: 'GitHub Pages Fix (Ruta principal)',
+                    url: '/Curso-Git-Agent/github-pages-fix.js'
+                },
+                {
+                    label: 'GitHub Pages Fix (Ruta relativa)',
+                    url: './github-pages-fix.js'
+                },
+                {
+                    label: 'Resource Loader (Ruta principal)',
+                    url: '/Curso-Git-Agent/resource-loader.js'
+                },
+                {
+                    label: 'Resource Loader (Ruta relativa)',
+                    url: './resource-loader.js'
+                },
+                {
+                    label: 'Main Script (Ruta principal)',
+                    url: '/Curso-Git-Agent/src/main.tsx'
+                },
+                {
+                    label: 'Assets JS (Estimado)',
+                    url: '/Curso-Git-Agent/assets/index.js'
+                }
+            ];
+            
+            // Crear elementos de test
+            resources.forEach(resource => {
+                const testItem = createTestItem(resource.label, resource.url);
+                testsContainer.appendChild(testItem);
+            });
+            
+            // Ejecutar tests
+            let successCount = 0;
+            for (const resource of resources) {
+                const success = await checkResource(resource.url, resource.label);
+                if (success) successCount++;
+                // Pequeña pausa para no saturar el servidor
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            addLog(`✅ Verificación completada: ${successCount}/${resources.length} recursos accesibles`);
+        }
+
+        // Inicializar información del entorno
+        function initEnvironmentInfo() {
+            document.getElementById('current-url').textContent = window.location.href;
+            document.getElementById('user-agent').textContent = navigator.userAgent.slice(0, 50) + '...';
+            document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        }
+
+        // Ejecutar al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            initEnvironmentInfo();
+            addLog('🔧 Página de verificación cargada');
+            runTests();
+        });
+    </script>
+</body>
+</html>

@@ -20,7 +20,9 @@ const filesToCopy = [
     'error-check.html',
     'success.html',
     'pages-index.html',
+    'resource-check.html',
     'github-pages-fix.js',
+    'resource-loader.js',
     '.htaccess',
     '.nojekyll'
 ];

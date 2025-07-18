@@ -15,8 +15,10 @@
     <meta name="keywords" content="git, gitlab, github, control de versiones, desarrollo, programación, tutorial" />
     <meta name="author" content="Git Training Portal" />
     
-    <!-- Web App Manifest -->
+    <!-- Web App Manifest with fallbacks -->
     <link rel="manifest" href="/Curso-Git-Agent/site.webmanifest" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="manifest" href="site.webmanifest" />
     
     <!-- GitHub Pages URL Fix -->
     <script src="/Curso-Git-Agent/github-pages-fix.js"></script>
@@ -58,6 +60,40 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/Curso-Git-Agent/src/main.tsx"></script>
+    
+    <!-- Load GitHub Pages fix script -->
+    <script>
+      // Inline fallback loader
+      const scriptPaths = [
+        '/Curso-Git-Agent/github-pages-fix.js',
+        './github-pages-fix.js',
+        'github-pages-fix.js'
+      ];
+      
+      function loadScript(paths, index = 0) {
+        if (index >= paths.length) {
+          console.warn('GitHub Pages fix script not found in any location');
+          return;
+        }
+        
+        const script = document.createElement('script');
+        script.src = paths[index];
+        script.onload = () => console.log(`✅ GitHub Pages fix loaded: ${paths[index]}`);
+        script.onerror = () => loadScript(paths, index + 1);
+        document.head.appendChild(script);
+      }
+      
+      loadScript(scriptPaths);
+    </script>
+    
+    <!-- Load Resource Loader -->
+    <script src="/Curso-Git-Agent/resource-loader.js" onerror="
+      this.onerror=null;
+      this.src='./resource-loader.js';
+      this.onerror=function(){
+        this.onerror=null;
+        this.src='resource-loader.js';
+      }
+    "></script>
   </body>
 </html>
