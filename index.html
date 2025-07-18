@@ -164,21 +164,33 @@
             ];
             
             for (const resource of criticalResources) {
-              const response = await fetch(resource, { method: 'HEAD' });
-              if (!response.ok) {
-                throw new Error(`Resource not available: ${resource}`);
+              try {
+                const response = await fetch(resource, { method: 'HEAD' });
+                if (!response.ok) {
+                  console.warn(`Resource not available: ${resource}, but continuing...`);
+                }
+              } catch (error) {
+                console.warn(`Resource check failed: ${resource}, but continuing...`);
               }
             }
             
             updateStatus('Cargando scripts del sistema...');
             
-            // Cargar GitHub Pages fix
-            await loadScript('/Curso-Git-Agent/github-pages-fix.js');
+            // Intentar cargar GitHub Pages fix (opcional)
+            try {
+              await loadScript('/Curso-Git-Agent/github-pages-fix.js');
+            } catch (error) {
+              console.warn('GitHub Pages fix not loaded, continuing...');
+            }
             
             updateStatus('Inicializando aplicación React...');
             
-            // Cargar resource loader que manejará el resto
-            await loadScript('/Curso-Git-Agent/resource-loader.js');
+            // Intentar cargar resource loader (opcional)
+            try {
+              await loadScript('/Curso-Git-Agent/resource-loader.js');
+            } catch (error) {
+              console.warn('Resource loader not loaded, continuing...');
+            }
             
             // Dar tiempo para que React se inicialice
             setTimeout(() => {
@@ -191,11 +203,12 @@
                 // Si React no se cargó, cargar aplicación inline
                 loadInlineApplication();
               }
-            }, 3000);
+            }, 2000); // Reducir tiempo de espera
             
           } catch (error) {
             console.error('Error loading application:', error);
-            showError(`Error al cargar la aplicación: ${error.message}`);
+            // En caso de error, cargar aplicación inline directamente
+            loadInlineApplication();
           }
         }
         
@@ -280,6 +293,15 @@
         } else {
           loadApplication();
         }
+        
+        // Fallback adicional: si después de 5 segundos no se carga nada, forzar aplicación inline
+        setTimeout(() => {
+          const reactRoot = document.getElementById('root');
+          if (reactRoot && reactRoot.innerHTML.trim() === '') {
+            console.log('🔄 Forcing inline application as final fallback');
+            loadInlineApplication();
+          }
+        }, 5000);
         
       })();
     </script>
