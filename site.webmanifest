@@ -2,13 +2,13 @@
   "name": "Git Training Portal",
   "short_name": "GitTraining",
   "description": "Portal de capacitación completo para Git, GitLab y GitHub Desktop",
-  "start_url": "/",
+  "start_url": "/Curso-Git-Agent/",
   "display": "standalone",
   "theme_color": "#F05032",
   "background_color": "#ffffff",
   "icons": [
     {
-      "src": "/vite.svg",
+      "src": "/Curso-Git-Agent/vite.svg",
       "sizes": "any",
       "type": "image/svg+xml"
     }
